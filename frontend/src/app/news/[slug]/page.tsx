@@ -1,0 +1,75 @@
+import Link from 'next/link';
+import { getNewsDetail } from '@/lib/api';
+import Breadcrumb from '@/components/layout/Breadcrumb';
+import Badge from '@/components/common/Badge';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const res = await getNewsDetail(slug);
+    return {
+      title: res.data.title,
+      description: res.data.excerpt || res.data.title,
+    };
+  } catch {
+    return { title: '記事が見つかりません' };
+  }
+}
+
+export default async function NewsDetailPage({ params }: Props) {
+  const { slug } = await params;
+  let article;
+  try {
+    const res = await getNewsDetail(slug);
+    article = res.data;
+  } catch {
+    notFound();
+  }
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+      <Breadcrumb
+        items={[
+          { label: 'お知らせ', href: '/news' },
+          { label: article.title },
+        ]}
+      />
+
+      <article className="mt-4">
+        <div className="flex items-center gap-3">
+          <time className="text-sm text-gray-400">
+            {new Date(article.published_at || article.created_at).toLocaleDateString('ja-JP')}
+          </time>
+          <Badge category={article.category} />
+        </div>
+
+        <h1 className="mt-4 text-3xl font-bold text-gray-900 leading-tight">{article.title}</h1>
+
+        {article.thumbnail && (
+          <div className="mt-6 rounded-xl overflow-hidden">
+            <img
+              src={article.thumbnail}
+              alt={article.title}
+              className="w-full h-auto"
+            />
+          </div>
+        )}
+
+        <div
+          className="mt-8 prose prose-gray max-w-none"
+          dangerouslySetInnerHTML={{ __html: article.body }}
+        />
+      </article>
+
+      <div className="mt-12 border-t pt-6">
+        <Link href="/news" className="text-sm text-primary hover:underline">
+          ← お知らせ一覧に戻る
+        </Link>
+      </div>
+    </div>
+  );
+}
