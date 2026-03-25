@@ -97,3 +97,111 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  # --- E2E Tests (Playwright) ---
+  e2e-test:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-check, admin-check]
+    defaults:
+      run:
+        working-directory: e2e
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: recruit_portfolio
+          MYSQL_USER: recruit
+          MYSQL_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: rootsecret
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo_mysql, zip, gd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install backend
+        working-directory: backend
+        run: |
+          composer install --no-interaction --prefer-dist
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Configure backend for E2E
+        working-directory: backend
+        run: |
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=recruit_portfolio" >> .env
+          echo "DB_USERNAME=recruit" >> .env
+          echo "DB_PASSWORD=secret" >> .env
+          echo "FRONTEND_URL=http://localhost:3000" >> .env
+          echo "ADMIN_URL=http://localhost:5173" >> .env
+          php artisan migrate --seed --force
+          php artisan storage:link
+
+      - name: Start backend
+        working-directory: backend
+        run: php artisan serve --port=8000 &
+
+      - name: Install & start frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          NEXT_PUBLIC_API_URL=http://localhost:8000/api npm run build
+          NEXT_PUBLIC_API_URL=http://localhost:8000/api npm start &
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000/api
+
+      - name: Install & start admin
+        working-directory: admin
+        run: |
+          npm ci
+          VITE_API_URL=http://localhost:8000 npx vite --host 0.0.0.0 --port 5173 &
+        env:
+          VITE_API_URL: http://localhost:8000
+
+      - name: Wait for services
+        run: |
+          for i in $(seq 1 30); do
+            curl -s http://localhost:8000/api/jobs > /dev/null && break
+            sleep 2
+          done
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3000 > /dev/null && break
+            sleep 2
+          done
+
+      - name: Install Playwright
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npx playwright test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 14

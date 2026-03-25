@@ -1,0 +1,32 @@
+services:
+  # --- Laravel API ---
+  - type: web
+    name: recruit-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    rootDir: backend
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: "Recruit Portfolio"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: MAIL_MAILER
+        value: log
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: SANCTUM_STATEFUL_DOMAINS
+        value: "*.vercel.app"
+      - key: FRONTEND_URL
+        value: "https://frontend-yohei0819.vercel.app"
+      - key: ADMIN_URL
+        value: "https://frontend-yohei0819.vercel.app"
