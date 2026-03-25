@@ -52,7 +52,7 @@
                    ▼
           ┌──────────────────┐
           │  MySQL 8          │
-          │  7 テーブル        │
+          │  8 テーブル        │
           └──────────────────┘
 ```
 
@@ -62,14 +62,14 @@
 
 | 項目 | 数値 |
 |------|------|
-| API エンドポイント | 39 |
-| DB テーブル | 7 |
+| API エンドポイント | 36 |
+| DB テーブル | 8 |
 | Feature テスト | 85（179 アサーション） |
 | フロントエンド単体テスト | 54（Vitest） |
 | E2E テスト | 54（Playwright） |
 | Swagger ドキュメント | 34 オペレーション |
 | 公開サイト ページ | 12 |
-| 管理画面 ビュー | 16 |
+| 管理画面 ビュー | 17 |
 
 ---
 
@@ -79,14 +79,16 @@
 |----------|------|------------|
 | 公開サイト | Next.js (App Router) / TypeScript / Tailwind CSS | 15.x / 4.x |
 | 管理画面 | Vue 3 + Vite / Pinia / Vue Router / TypeScript / Tailwind CSS | 3.5.x / 4.x |
+| 管理画面チャート | Chart.js + vue-chartjs | 4.x |
 | API サーバー | Laravel / Sanctum / PHP | 11.x / 8.3 |
 | DB | MySQL | 8.x |
 | HTTP | Axios | 1.x |
-| テスト | PHPUnit | 12.x |
+| テスト | PHPUnit / Vitest | 12.x / 4.x |
 | E2E テスト | Playwright | 1.x |
+| コード品質 | Prettier / husky / lint-staged | - |
 | コンテナ | Docker Compose | - |
 | CI | GitHub Actions | - |
-| デプロイ | Vercel (frontend) + Render (backend) | - |
+| デプロイ | Vercel (frontend) + GitHub Pages (admin) + Render (backend) | - |
 
 ### なぜフロントを 2 つに分けたか
 
@@ -107,16 +109,22 @@
 ├── docs/                        # 設計ドキュメント
 │   ├── sitemap.md               #   サイトマップ
 │   ├── screen-list.md           #   画面一覧
-│   ├── api-spec.md              #   API 仕様書（39 エンドポイント）
-│   ├── db-design.md             #   DB 設計書（7 テーブル）
+│   ├── api-spec.md              #   API 仕様書（36 エンドポイント）
+│   ├── db-design.md             #   DB 設計書（8 テーブル）
 │   ├── er-diagram.md            #   ER 図（Mermaid）
 │   ├── tech-stack.md            #   技術選定理由
 │   └── phase-plan.md            #   開発フェーズ計画
 │
 ├── frontend/                    # 公開サイト — Next.js 15 (App Router)
+│   ├── public/
+│   │   ├── manifest.json        #   PWA マニフェスト
+│   │   ├── sw.js                #   Service Worker
+│   │   ├── robots.txt           #   robots.txt
+│   │   └── icon-*.png           #   PWA アイコン
 │   └── src/
 │       ├── app/                 #   ルーティング（12 ページ）
 │       │   ├── page.tsx         #     トップページ
+│       │   ├── sitemap.ts       #     動的サイトマップ生成
 │       │   ├── about/           #     会社紹介
 │       │   ├── business/        #     事業紹介
 │       │   ├── culture/         #     働く環境
@@ -128,19 +136,24 @@
 │       │   ├── contact/         #     問い合わせフォーム
 │       │   └── privacy/         #     プライバシーポリシー
 │       ├── components/          #   共通コンポーネント
+│       │   ├── ThemeProvider    #     ダークモード管理
+│       │   ├── ThemeToggle      #     テーマ切替ボタン
+│       │   └── ServiceWorkerRegister # SW 登録
 │       ├── lib/                 #   API クライアント・ユーティリティ
+│       │   └── json-ld.ts       #   JSON-LD 構造化データ
 │       └── types/               #   TypeScript 型定義
 │
 ├── admin/                       # 管理画面 — Vue 3 + Vite (SPA)
 │   └── src/
-│       ├── views/               #   画面（16 ビュー）
-│       │   ├── DashboardView    #     ダッシュボード
+│       ├── views/               #   画面（17 ビュー）
+│       │   ├── DashboardView    #     ダッシュボード（チャート付き）
 │       │   ├── LoginView        #     ログイン
+│       │   ├── ActivityLogView  #     アクティビティログ
 │       │   ├── jobs/            #     求人 CRUD
-│       │   ├── applications/    #     応募管理
+│       │   ├── applications/    #     応募管理（一括操作付き）
 │       │   ├── members/         #     社員 CRUD
 │       │   ├── news/            #     お知らせ CRUD
-│       │   ├── inquiries/       #     問い合わせ管理
+│       │   ├── inquiries/       #     問い合わせ管理（一括操作付き）
 │       │   └── media/           #     メディア管理
 │       ├── components/          #   UI / フォーム / テーブルコンポーネント
 │       ├── stores/              #   Pinia ストア（認証・各リソース）
@@ -148,18 +161,22 @@
 │       ├── router/              #   Vue Router（認証ガード付き）
 │       └── types/               #   TypeScript 型定義
 │
-└── backend/                     # API サーバー — Laravel 11
-    ├── app/
-    │   ├── Http/Controllers/Api/ #  API コントローラ（7 個）
-    │   ├── Http/Requests/       #   FormRequest バリデーション（5 個）
-    │   ├── Models/              #   Eloquent モデル（7 個）
-    │   └── Mail/                #   メール通知（3 個）
-    ├── database/
-    │   ├── migrations/          #   マイグレーション（7 テーブル）
-    │   ├── factories/           #   テスト用ファクトリ（7 個）
-    │   └── seeders/             #   初期データ
-    ├── routes/api.php           #   API ルート定義
-    └── tests/Feature/           #   Feature テスト（8 ファイル / 85 テスト）
+├── backend/                     # API サーバー — Laravel 11
+│   ├── app/
+│   │   ├── Http/Controllers/Api/ #  API コントローラ（8 個）
+│   │   ├── Http/Requests/       #   FormRequest バリデーション（5 個）
+│   │   ├── Models/              #   Eloquent モデル（8 個）
+│   │   └── Mail/                #   メール通知（3 個）
+│   ├── database/
+│   │   ├── migrations/          #   マイグレーション（8 テーブル）
+│   │   ├── factories/           #   テスト用ファクトリ（7 個）
+│   │   └── seeders/             #   初期データ
+│   ├── routes/api.php           #   API ルート定義
+│   └── tests/Feature/           #   Feature テスト（8 ファイル / 85 テスト）
+│
+├── .prettierrc                  # Prettier 設定
+├── .editorconfig                # EditorConfig
+└── .husky/pre-commit            # husky + lint-staged
 ```
 
 ---
@@ -223,6 +240,18 @@ erDiagram
         varchar mime_type
         int size
     }
+
+    users ||--o{ activity_logs : "has many"
+
+    activity_logs {
+        bigint id PK
+        bigint user_id FK
+        varchar action
+        varchar target_type
+        bigint target_id
+        varchar description
+        json metadata
+    }
 ```
 
 > 詳細は [docs/er-diagram.md](docs/er-diagram.md) / [docs/db-design.md](docs/db-design.md) を参照
@@ -242,29 +271,41 @@ erDiagram
 | FAQ | カテゴリ別 / アコーディオン / キーワード検索 |
 | 応募フォーム | 入力 → 確認 → 完了の 3 ステップ / ファイルアップロード / 自動メール送信 |
 | 問い合わせフォーム | バリデーション付き / 受付メール自動送信 |
+| ダークモード | OS 設定連動 + 手動切替 / localStorage 保存 |
+| PWA 対応 | オフラインキャッシュ / ホーム画面追加 / Service Worker |
 
 ### 管理画面
 
 | 機能 | 説明 |
 |------|------|
-| ダッシュボード | 応募数・問い合わせ数の集計表示 / スケルトンローディング |
-| 求人 CRUD | 作成・編集・削除 / 下書き↔公開切替 / slug 自動生成 |
-| 応募管理 | ステータス管理（5 段階）/ 管理者メモ / CSV エクスポート |
-| 社員 CRUD | プロフィール画像 / 表示順管理 |
-| お知らせ CRUD | カテゴリ / 公開日 / リッチテキスト |
-| 問い合わせ管理 | 未読→対応済みフロー / フィルタ |
+| ダッシュボード | 統計カード + 月別応募トレンド（棒グラフ）+ ステータス分布（ドーナツチャート） |
+| 求人 CRUD | 作成・編集・削除 / 下書き↔公開切替 / slug 自動生成 / 一括削除 |
+| 応募管理 | ステータス管理（5 段階）/ 一括ステータス変更 / 管理者メモ / CSV エクスポート |
+| 社員 CRUD | プロフィール画像 / 表示順管理 / 一括削除 |
+| お知らせ CRUD | カテゴリ / 公開日 / リッチテキスト / 一括削除 |
+| 問い合わせ管理 | ステータス管理 / 一括ステータス変更 / フィルタ |
 | メディア管理 | 画像アップロード / URL コピー / MIME / サイズ検証 |
+| アクティビティログ | 操作履歴のタイムライン表示 / ユーザー・対象・日時を記録 |
 | 認証 | Sanctum トークン認証 / ルートガード |
+
+### SEO / パフォーマンス
+
+- **動的サイトマップ** — `sitemap.ts` で求人・社員・お知らせを自動収集し sitemap.xml を生成
+- **robots.txt** — クローラ許可設定
+- **JSON-LD 構造化データ** — Organization / WebSite / JobPosting / Article の 4 スキーマ
+- **セキュリティヘッダー** — CSP / HSTS / X-Frame-Options / X-Content-Type-Options / Referrer-Policy / Permissions-Policy
 
 ### UI / UX
 
 - **スクロールアニメーション** — FadeIn コンポーネントによる交差オブザーバ制御
 - **スケルトンローディング** — データ取得中のプレースホルダ表示
+- **ダークモード** — OS 設定に連動 + ヘッダーから手動切替
 - **エラー画面** — error.tsx / global-error.tsx / not-found.tsx
 - **空状態コンポーネント** — 検索結果ゼロ時の案内 UI
 - **アクセシビリティ** — スキップリンク / aria 属性 / focus-visible / prefers-reduced-motion
 - **レスポンシブ** — モバイルハンバーガーメニュー（スクロールロック付き）
 - **トースト通知** — 管理画面の操作フィードバック
+- **Dashboard チャート** — Chart.js + vue-chartjs による応募トレンド・ステータス分布の可視化
 
 ---
 
@@ -396,16 +437,25 @@ npm run dev                      # → http://localhost:5173
 - **Sanctum トークン認証** — 管理 API は全エンドポイントを `auth:sanctum` ミドルウェアで保護
 - **ファイルアップロード検証** — MIME タイプ・サイズ上限をサーバー側で厳格に検証
 - **SQL インジェクション対策** — Eloquent ORM のみ使用。生 SQL は禁止
+- **セキュリティヘッダー** — CSP / HSTS / X-Frame-Options 等 7 種のヘッダーを next.config.ts で設定
+- **XSS 対策** — isomorphic-dompurify によるサニタイズ
 
 ### 品質
 
 - **85 テスト全パス** — CRUD・フォーム送信・メール送信・ファイルアップロード・権限ガードを網羅
 - **データプロバイダ活用** — 24 の管理エンドポイントを `#[DataProvider]` で一括テスト
 - **設計ドキュメント先行** — サイトマップ・API 仕様・DB 設計を先に作成し、仕様に基づいて実装
+- **コード品質ツール** — Prettier + husky + lint-staged でコミット時に自動フォーマット
+- **EditorConfig** — チーム開発を想定した統一設定
 
 ### UX
 
 - **スクロールアニメーション + スケルトン** — 体感速度とリッチ感の両立
+- **ダークモード** — OS 設定連動 + ヘッダーからワンクリック切替、localStorage で保存
+- **ダッシュボードチャート** — Chart.js による月別応募トレンドとステータス分布の可視化
+- **一括操作** — 応募・問い合わせの一括ステータス変更、求人・社員・お知らせの一括削除
+- **アクティビティログ** — 管理操作の履歴を自動記録、タイムライン形式で閲覧
+- **PWA 対応** — Service Worker によるオフラインキャッシュ / ホーム画面追加
 - **アクセシビリティ対応** — キーボード操作・スクリーンリーダー・モーション設定への配慮
 - **3 ステップ応募フォーム** — 確認画面付きで誤送信を防止
 
@@ -417,7 +467,7 @@ npm run dev                      # → http://localhost:5173
 - **全文検索** — Laravel Scout + Meilisearch で求人・お知らせの検索強化
 - **多言語対応** — Next.js i18n + Laravel Lang による日英切替
 - **通知機能** — 新規応募時に Slack / メール通知
-- **管理画面デプロイ** — Vue 3 SPA を Vercel / Netlify で公開
+- **リアルタイム更新** — Laravel Broadcasting + WebSocket でダッシュボード自動更新
 
 ---
 
@@ -427,8 +477,8 @@ npm run dev                      # → http://localhost:5173
 |-------------|------|
 | [サイトマップ](docs/sitemap.md) | 全ページの階層構造 |
 | [画面一覧](docs/screen-list.md) | 各画面の URL・機能概要 |
-| [API 仕様](docs/api-spec.md) | 39 エンドポイントの詳細 |
-| [DB 設計](docs/db-design.md) | 7 テーブルの定義 |
+| [API 仕様](docs/api-spec.md) | 36 エンドポイントの詳細 |
+| [DB 設計](docs/db-design.md) | 8 テーブルの定義 |
 | [ER 図](docs/er-diagram.md) | Mermaid 形式のリレーション図 |
 | [技術選定](docs/tech-stack.md) | 各技術の選定理由 |
 | [フェーズ計画](docs/phase-plan.md) | 8 フェーズの開発計画 |
