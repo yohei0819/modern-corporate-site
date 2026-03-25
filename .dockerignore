@@ -1,0 +1,9 @@
+.git
+node_modules
+.next
+dist
+vendor
+mysql-data
+*.log
+.env
+.DS_Store
