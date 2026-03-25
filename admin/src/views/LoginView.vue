@@ -8,10 +8,11 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-const email = ref('');
-const password = ref('');
+const email = ref('admin@example.com');
+const password = ref('password');
 const error = ref('');
 const loading = ref(false);
+const showDemoHint = ref(true);
 
 async function handleLogin() {
   error.value = '';
@@ -35,6 +36,11 @@ async function handleLogin() {
 <template>
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
     <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">管理画面ログイン</h2>
+
+    <div v-if="showDemoHint" class="mb-4 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700">
+      <p class="font-medium">デモ用アカウント（入力済み）</p>
+      <p class="mt-1">そのまま「ログイン」ボタンを押してください。</p>
+    </div>
 
     <div v-if="error" class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
       {{ error }}

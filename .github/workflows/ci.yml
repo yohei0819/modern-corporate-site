@@ -68,6 +68,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit Test
+        run: npm test
+
       - name: Build
         run: npm run build
 
@@ -94,6 +97,9 @@ jobs:
 
       - name: Type check
         run: npx vue-tsc --build
+
+      - name: Unit Test
+        run: npm test
 
       - name: Build
         run: npm run build
