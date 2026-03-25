@@ -1,5 +1,7 @@
 # 採用広報サイト + 応募管理ダッシュボード
 
+[![CI](https://github.com/yohei0819/modern-corporate-site/actions/workflows/ci.yml/badge.svg)](https://github.com/yohei0819/modern-corporate-site/actions/workflows/ci.yml)
+
 架空の企業「モダンコーポレート」の**採用広報サイト（公開面）**と**応募管理ダッシュボード（管理面）**を、フロントエンド 2 種 + バックエンド API の 3 層構成で開発したポートフォリオ作品です。
 
 ---
@@ -53,6 +55,8 @@
 | DB | MySQL | 8.x |
 | HTTP | Axios | 1.x |
 | テスト | PHPUnit | 12.x |
+| コンテナ | Docker Compose | - |
+| CI | GitHub Actions | - |
 
 ### なぜフロントを 2 つに分けたか
 
@@ -262,8 +266,26 @@ cd backend && php artisan test
 - PHP 8.3+ / Composer 2.x
 - Node.js 20+ / npm
 - MySQL 8.x
+- Docker（Docker 起動の場合のみ）
 
-### バックエンド
+### Docker で一発起動（推奨）
+
+```bash
+docker compose up -d
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+docker compose exec app php artisan storage:link
+```
+
+| サービス | URL |
+|----------|-----|
+| 公開サイト | http://localhost:3000 |
+| 管理画面 | http://localhost:5173 |
+| API | http://localhost:8000 |
+
+### ローカル起動（Docker 不使用）
+
+#### バックエンド
 
 ```bash
 cd backend
@@ -275,7 +297,7 @@ php artisan storage:link
 php artisan serve                # → http://localhost:8000
 ```
 
-### 公開サイト
+#### 公開サイト
 
 ```bash
 cd frontend
@@ -283,7 +305,7 @@ npm install
 npm run dev                      # → http://localhost:3000
 ```
 
-### 管理画面
+#### 管理画面
 
 ```bash
 cd admin
@@ -291,7 +313,20 @@ npm install
 npm run dev                      # → http://localhost:5173
 ```
 
-> 管理画面ログイン: `admin@example.com` / `password`
+> 管理画面ログイン: `admin@example.com` / `password`（管理者） or `editor@example.com` / `password`（編集者）
+
+### デモデータ
+
+`php artisan db:seed` で以下のリアルなデモデータが投入されます：
+
+| データ | 件数 | 内容 |
+|--------|------|------|
+| 管理ユーザー | 2 | admin / editor ロール |
+| 求人 | 15 | 固定 3 件 + ファクトリ 12 件（公開 / 下書き） |
+| 社員 | 10 | 固定 8 名（CEO〜ジュニア）+ 下書き 2 名 |
+| お知らせ | 18 | 固定 5 件 + ファクトリ 13 件（info / press / event） |
+| 応募 | 30〜60 | 公開求人に紐づく応募（ステータス・管理メモ付き） |
+| 問い合わせ | 12 | 未読 7 件 + 対応済み 5 件 |
 
 ---
 
@@ -327,12 +362,11 @@ npm run dev                      # → http://localhost:5173
 ## 🔮 今後の拡張案
 
 - **E2E テスト** — Playwright による公開サイト + 管理画面の統合テスト
-- **Docker 化** — docker-compose で開発環境をワンコマンド構築
-- **CI/CD** — GitHub Actions で PHPUnit + ESLint を自動実行
 - **画像最適化** — Sharp / WebP 変換による配信サイズ削減
 - **全文検索** — Laravel Scout + Meilisearch で求人・お知らせの検索強化
 - **多言語対応** — Next.js i18n + Laravel Lang による日英切替
 - **通知機能** — 新規応募時に Slack / メール通知
+- **本番デプロイ** — Vercel (frontend) + Railway (backend) での公開
 
 ---
 
