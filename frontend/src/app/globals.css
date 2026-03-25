@@ -8,3 +8,78 @@
   --color-accent-dark: #d97706;
   --font-sans: var(--font-geist-sans);
 }
+
+/* ── Scroll Animations ── */
+.fade-in-up,
+.fade-in-down,
+.fade-in-left,
+.fade-in-right,
+.fade-in-none {
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in-up    { transform: translateY(24px); }
+.fade-in-down  { transform: translateY(-24px); }
+.fade-in-left  { transform: translateX(-24px); }
+.fade-in-right { transform: translateX(24px); }
+.fade-in-none  { transform: none; }
+
+.fade-in-visible {
+  opacity: 1;
+  transform: translate(0);
+}
+
+/* ── Skip to content ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Skeleton loading ── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton {
+  background-color: #e5e7eb;
+  border-radius: 0.375rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up,
+  .fade-in-down,
+  .fade-in-left,
+  .fade-in-right,
+  .fade-in-none {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .skeleton {
+    animation: none;
+  }
+}

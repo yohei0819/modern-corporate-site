@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getJobs, getMembers, getNewsList } from '@/lib/api';
 import SectionTitle from '@/components/common/SectionTitle';
 import Badge from '@/components/common/Badge';
+import FadeIn from '@/components/common/FadeIn';
 
 export default async function HomePage() {
   const [jobsRes, membersRes, newsRes] = await Promise.all([
@@ -53,12 +55,14 @@ export default async function HomePage() {
       {/* Jobs */}
       <section className="py-20 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionTitle title="募集職種" subtitle="Careers" />
+          <FadeIn>
+            <SectionTitle title="募集職種" subtitle="Careers" />
+          </FadeIn>
           {jobs.length > 0 ? (
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {jobs.map((job) => (
+              {jobs.map((job, i) => (
+                <FadeIn key={job.id} delay={i * 100}>
                 <Link
-                  key={job.id}
                   href={`/jobs/${job.slug}`}
                   className="group block rounded-xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                 >
@@ -74,6 +78,7 @@ export default async function HomePage() {
                     <span>{job.salary_text}</span>
                   </div>
                 </Link>
+                </FadeIn>
               ))}
             </div>
           ) : (
@@ -93,20 +98,24 @@ export default async function HomePage() {
       {/* Members */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionTitle title="社員紹介" subtitle="People" />
+          <FadeIn>
+            <SectionTitle title="社員紹介" subtitle="People" />
+          </FadeIn>
           {members.length > 0 ? (
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {members.map((member) => (
+              {members.map((member, i) => (
+                <FadeIn key={member.id} delay={i * 100}>
                 <Link
-                  key={member.id}
                   href={`/members/${member.slug}`}
                   className="group block text-center"
                 >
                   <div className="mx-auto h-48 w-48 overflow-hidden rounded-full bg-gray-200">
                     {member.profile_image && (
-                      <img
+                      <Image
                         src={member.profile_image}
                         alt={member.name}
+                        width={192}
+                        height={192}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     )}
@@ -117,6 +126,7 @@ export default async function HomePage() {
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">{member.catch_copy}</p>
                 </Link>
+                </FadeIn>
               ))}
             </div>
           ) : (
@@ -136,7 +146,9 @@ export default async function HomePage() {
       {/* News */}
       <section className="py-20 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionTitle title="お知らせ" subtitle="News" />
+          <FadeIn>
+            <SectionTitle title="お知らせ" subtitle="News" />
+          </FadeIn>
           {news.length > 0 ? (
             <div className="mt-12 space-y-4 max-w-3xl mx-auto">
               {news.map((item) => (
@@ -172,6 +184,7 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="py-20 bg-primary">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <FadeIn>
           <h2 className="text-3xl font-bold text-white sm:text-4xl">
             一緒に未来を創りませんか？
           </h2>
@@ -192,6 +205,7 @@ export default async function HomePage() {
               お問い合わせ
             </Link>
           </div>
+          </FadeIn>
         </div>
       </section>
     </>

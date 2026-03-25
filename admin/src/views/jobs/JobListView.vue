@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
+import AppEmptyState from '@/components/ui/AppEmptyState.vue';
 import type { JobPosting, PaginatedResponse } from '@/types';
 
 const router = useRouter();
@@ -56,8 +57,26 @@ onMounted(fetchJobs);
     </div>
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div v-if="loading" class="p-8 text-center text-gray-500">読み込み中...</div>
-      <div v-else-if="jobs.length === 0" class="p-8 text-center text-gray-500">求人がありません。</div>
+      <!-- Skeleton loading -->
+      <div v-if="loading" class="p-6 space-y-4">
+        <div v-for="i in 5" :key="i" class="flex items-center gap-4">
+          <div class="skeleton h-4 w-1/3" />
+          <div class="skeleton h-4 w-20" />
+          <div class="skeleton h-4 w-16" />
+          <div class="skeleton h-5 w-14 rounded-full" />
+          <div class="flex-1" />
+          <div class="skeleton h-4 w-16" />
+        </div>
+      </div>
+      <!-- Empty state -->
+      <AppEmptyState
+        v-else-if="jobs.length === 0"
+        icon="💼"
+        title="求人がありません"
+        description="新しい求人を作成しましょう。"
+        action-label="新規作成"
+        @action="router.push({ name: 'jobs-create' })"
+      />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>

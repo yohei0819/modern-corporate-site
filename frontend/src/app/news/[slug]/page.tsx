@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getNewsDetail } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
@@ -51,10 +52,13 @@ export default async function NewsDetailPage({ params }: Props) {
 
         {article.thumbnail && (
           <div className="mt-6 rounded-xl overflow-hidden">
-            <img
+            <Image
               src={article.thumbnail}
               alt={article.title}
+              width={800}
+              height={450}
               className="w-full h-auto"
+              priority
             />
           </div>
         )}

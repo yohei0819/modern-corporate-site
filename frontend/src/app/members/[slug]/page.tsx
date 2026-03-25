@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getMember } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
@@ -43,10 +44,13 @@ export default async function MemberDetailPage({ params }: Props) {
         <div className="shrink-0">
           <div className="mx-auto sm:mx-0 h-56 w-56 overflow-hidden rounded-2xl bg-gray-200">
             {member.profile_image && (
-              <img
+              <Image
                 src={member.profile_image}
                 alt={member.name}
+                width={224}
+                height={224}
                 className="h-full w-full object-cover"
+                priority
               />
             )}
           </div>

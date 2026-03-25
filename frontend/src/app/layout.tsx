@@ -30,8 +30,11 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${geistSans.variable} h-full`}>
       <body className="min-h-full flex flex-col font-sans antialiased">
+        <a href="#main-content" className="skip-link">
+          メインコンテンツへスキップ
+        </a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

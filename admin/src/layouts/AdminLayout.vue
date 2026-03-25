@@ -9,13 +9,13 @@ const route = useRoute();
 const sidebarOpen = ref(false);
 
 const navigation = [
-  { name: 'ダッシュボード', to: '/', icon: 'home' },
-  { name: '求人管理', to: '/jobs', icon: 'briefcase' },
-  { name: '応募管理', to: '/applications', icon: 'inbox' },
-  { name: '社員管理', to: '/members', icon: 'users' },
-  { name: 'お知らせ管理', to: '/news', icon: 'newspaper' },
-  { name: '問い合わせ', to: '/inquiries', icon: 'mail' },
-  { name: 'メディア', to: '/media', icon: 'image' },
+  { name: 'ダッシュボード', to: '/', icon: '🏠' },
+  { name: '求人管理', to: '/jobs', icon: '💼' },
+  { name: '応募管理', to: '/applications', icon: '📥' },
+  { name: '社員管理', to: '/members', icon: '👥' },
+  { name: 'お知らせ管理', to: '/news', icon: '📰' },
+  { name: '問い合わせ', to: '/inquiries', icon: '✉️' },
+  { name: 'メディア', to: '/media', icon: '🖼️' },
 ];
 
 function isActive(path: string): boolean {
@@ -61,6 +61,7 @@ async function handleLogout() {
           ]"
           @click="sidebarOpen = false"
         >
+          <span class="text-base" aria-hidden="true">{{ item.icon }}</span>
           {{ item.name }}
         </RouterLink>
       </nav>
