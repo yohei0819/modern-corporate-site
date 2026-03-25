@@ -27,6 +27,7 @@ return [
     'allowed_origins_patterns' => [
         '#^https://.*\.vercel\.app$#',
         '#^https://.*\.onrender\.com$#',
+        '#^https://.*\.github\.io$#',
     ],
 
     'allowed_headers' => ['*'],

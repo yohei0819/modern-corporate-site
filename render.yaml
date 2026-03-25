@@ -27,10 +27,10 @@ services:
       - key: SESSION_DRIVER
         value: file
       - key: SANCTUM_STATEFUL_DOMAINS
-        value: "*.vercel.app"
+        value: "*.vercel.app,yohei0819.github.io"
       - key: FRONTEND_URL
         value: "https://frontend-yohei0819.vercel.app"
       - key: APP_URL
         value: "https://recruit-api-sop3.onrender.com"
       - key: ADMIN_URL
-        value: "https://frontend-yohei0819.vercel.app"
+        value: "https://yohei0819.github.io"
