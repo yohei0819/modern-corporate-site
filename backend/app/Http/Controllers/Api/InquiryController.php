@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InquiryRequest;
 use App\Mail\InquiryReceived;
+use App\Models\ActivityLog;
 use App\Models\Inquiry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -103,11 +104,13 @@ class InquiryController extends Controller
     public function adminUpdate(Request $request, Inquiry $inquiry): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'in:unread,replied'],
+            'status' => ['nullable', 'in:new,in_progress,closed'],
             'admin_note' => ['nullable', 'string'],
         ]);
 
         $inquiry->update($validated);
+
+        ActivityLog::log('update', 'Inquiry', $inquiry->id, "問い合わせ「{$inquiry->name}」を更新しました");
 
         return response()->json(['data' => $inquiry]);
     }

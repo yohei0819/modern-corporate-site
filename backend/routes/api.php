@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\InquiryController;
@@ -91,4 +92,7 @@ Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
     Route::get('/admin/media', [MediaController::class, 'index']);
     Route::post('/admin/media', [MediaController::class, 'store']);
     Route::delete('/admin/media/{media}', [MediaController::class, 'destroy']);
+
+    // アクティビティログ
+    Route::get('/admin/activity-logs', [ActivityLogController::class, 'index']);
 });

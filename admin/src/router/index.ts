@@ -106,6 +106,13 @@ const router = createRouter({
       component: () => import('@/views/media/MediaView.vue'),
       meta: { requiresAuth: true },
     },
+    // アクティビティログ
+    {
+      path: '/activity-logs',
+      name: 'activity-logs',
+      component: () => import('@/views/ActivityLogView.vue'),
+      meta: { requiresAuth: true },
+    },
     // 設定
     {
       path: '/settings',

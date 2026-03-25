@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NewsRequest;
+use App\Models\ActivityLog;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -101,6 +102,8 @@ class NewsController extends Controller
 
         $news = News::create($data);
 
+        ActivityLog::log('create', 'News', $news->id, "お知らせ「{$news->title}」を作成しました");
+
         return response()->json(['data' => $news], 201);
     }
 
@@ -127,6 +130,8 @@ class NewsController extends Controller
 
         $news->update($data);
 
+        ActivityLog::log('update', 'News', $news->id, "お知らせ「{$news->title}」を更新しました");
+
         return response()->json(['data' => $news]);
     }
 
@@ -140,6 +145,8 @@ class NewsController extends Controller
     )]
     public function destroy(News $news): JsonResponse
     {
+        ActivityLog::log('delete', 'News', $news->id, "お知らせ「{$news->title}」を削除しました");
+
         if ($news->thumbnail) {
             Storage::disk('public')->delete($news->thumbnail);
         }

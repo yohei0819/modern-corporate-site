@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplicationRequest;
 use App\Mail\AdminNotification;
 use App\Mail\ApplicationReceived;
+use App\Models\ActivityLog;
 use App\Models\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -127,11 +128,13 @@ class ApplicationController extends Controller
     public function updateStatus(Request $request, Application $application): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:unread,reviewing,interviewing,rejected,accepted'],
+            'status' => ['required', 'in:new,reviewing,interviewed,accepted,rejected'],
             'admin_note' => ['nullable', 'string'],
         ]);
 
         $application->update($validated);
+
+        ActivityLog::log('status_change', 'Application', $application->id, "応募「{$application->name}」のステータスを{$validated['status']}に変更しました");
 
         return response()->json(['data' => $application]);
     }

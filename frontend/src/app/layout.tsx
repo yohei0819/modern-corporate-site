@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ThemeProvider from '@/components/ThemeProvider';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/json-ld';
 
 const geistSans = Geist({
@@ -48,6 +49,9 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${geistSans.variable} h-full`}>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="preconnect" href="https://recruit-api-sop3.onrender.com" />
         <link rel="dns-prefetch" href="https://recruit-api-sop3.onrender.com" />
       </head>
@@ -67,6 +71,7 @@ export default function RootLayout({
           <Header />
           <main id="main-content" className="flex-1 page-transition">{children}</main>
           <Footer />
+          <ServiceWorkerRegister />
         </ThemeProvider>
       </body>
     </html>

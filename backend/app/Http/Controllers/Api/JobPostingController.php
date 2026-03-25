@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JobPostingRequest;
+use App\Models\ActivityLog;
 use App\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -121,6 +122,8 @@ class JobPostingController extends Controller
     {
         $job = JobPosting::create($request->validated());
 
+        ActivityLog::log('create', 'JobPosting', $job->id, "求人「{$job->title}」を作成しました");
+
         return response()->json(['data' => $job], 201);
     }
 
@@ -140,6 +143,8 @@ class JobPostingController extends Controller
     {
         $jobPosting->update($request->validated());
 
+        ActivityLog::log('update', 'JobPosting', $jobPosting->id, "求人「{$jobPosting->title}」を更新しました");
+
         return response()->json(['data' => $jobPosting]);
     }
 
@@ -156,6 +161,8 @@ class JobPostingController extends Controller
     )]
     public function destroy(JobPosting $jobPosting): JsonResponse
     {
+        ActivityLog::log('delete', 'JobPosting', $jobPosting->id, "求人「{$jobPosting->title}」を削除しました");
+
         $jobPosting->delete();
 
         return response()->json(null, 204);

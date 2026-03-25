@@ -16,6 +16,7 @@ const navigation = [
   { name: 'お知らせ管理', to: '/news', icon: '📰' },
   { name: '問い合わせ', to: '/inquiries', icon: '✉️' },
   { name: 'メディア', to: '/media', icon: '🖼️' },
+  { name: 'ログ', to: '/activity-logs', icon: '📋' },
   { name: '設定', to: '/settings', icon: '⚙️' },
 ];
 

@@ -111,3 +111,16 @@ export interface LoginResponse {
   user: User;
   token: string;
 }
+
+export interface ActivityLog {
+  id: number;
+  user_id: number | null;
+  user?: { id: number; name: string } | null;
+  action: string;
+  target_type: string;
+  target_id: number | null;
+  description: string;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}

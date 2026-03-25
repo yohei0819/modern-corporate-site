@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MemberRequest;
+use App\Models\ActivityLog;
 use App\Models\Member;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -89,6 +90,8 @@ class MemberController extends Controller
 
         $member = Member::create($data);
 
+        ActivityLog::log('create', 'Member', $member->id, "社員「{$member->name}」を作成しました");
+
         return response()->json(['data' => $member], 201);
     }
 
@@ -115,6 +118,8 @@ class MemberController extends Controller
 
         $member->update($data);
 
+        ActivityLog::log('update', 'Member', $member->id, "社員「{$member->name}」を更新しました");
+
         return response()->json(['data' => $member]);
     }
 
@@ -128,6 +133,8 @@ class MemberController extends Controller
     )]
     public function destroy(Member $member): JsonResponse
     {
+        ActivityLog::log('delete', 'Member', $member->id, "社員「{$member->name}」を削除しました");
+
         if ($member->profile_image) {
             Storage::disk('public')->delete($member->profile_image);
         }
