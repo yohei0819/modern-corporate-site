@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getNewsDetail } from '@/lib/api';
+import { sanitizeHtml } from '@/lib/sanitize';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
 import { notFound } from 'next/navigation';
@@ -75,7 +76,7 @@ export default async function NewsDetailPage({ params }: Props) {
 
         <div
           className="mt-8 prose prose-gray max-w-none"
-          dangerouslySetInnerHTML={{ __html: article.body }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body) }}
         />
       </article>
 

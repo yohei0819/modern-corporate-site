@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { isAxiosError } from 'axios';
 import api from '@/services/api';
@@ -60,6 +60,8 @@ onMounted(async () => {
         sort_order: m.sort_order,
       };
       if (m.profile_image) imagePreview.value = m.profile_image;
+    } catch {
+      toast.error('社員情報の取得に失敗しました');
     } finally {
       fetching.value = false;
     }
@@ -71,9 +73,18 @@ onMounted(async () => {
 function handleImageChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
+  if (imagePreview.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
   imageFile.value = file;
   imagePreview.value = URL.createObjectURL(file);
 }
+
+onBeforeUnmount(() => {
+  if (imagePreview.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+});
 
 async function handleSubmit() {
   if (!validateClient()) return;

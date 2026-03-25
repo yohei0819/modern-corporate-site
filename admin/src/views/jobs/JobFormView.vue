@@ -63,6 +63,8 @@ onMounted(async () => {
         sort_order: job.sort_order,
         published_at: job.published_at?.slice(0, 16) ?? '',
       };
+    } catch {
+      toast.error('求人情報の取得に失敗しました');
     } finally {
       fetching.value = false;
     }

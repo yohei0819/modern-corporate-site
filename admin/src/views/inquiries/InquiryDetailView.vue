@@ -23,6 +23,8 @@ onMounted(async () => {
   try {
     const { data } = await api.get<{ data: Inquiry }>(`/admin/inquiries/${route.params.id}`);
     inquiry.value = data.data;
+  } catch {
+    toast.error('問い合わせ情報の取得に失敗しました');
   } finally {
     loading.value = false;
   }

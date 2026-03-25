@@ -65,7 +65,7 @@ export default async function MembersPage({
           <Pagination currentPage={res.meta.current_page} lastPage={res.meta.last_page} />
         </>
       ) : (
-        <p className="mt-16 text-center text-gray-500">
+        <div className="mt-16 text-center text-gray-500">
           <EmptyState
             icon="👥"
             title="社員紹介は準備中です"
@@ -73,7 +73,7 @@ export default async function MembersPage({
             actionLabel="トップに戻る"
             actionHref="/"
           />
-        </p>
+        </div>
       )}
     </div>
   );

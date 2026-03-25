@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getJob } from '@/lib/api';
+import { sanitizeHtml } from '@/lib/sanitize';
+import { employmentTypeLabels } from '@/lib/constants';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -22,13 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: '求人が見つかりません' };
   }
 }
-
-const employmentTypeLabels: Record<string, string> = {
-  'full-time': '正社員',
-  'contract': '契約社員',
-  'part-time': 'パートタイム',
-  'intern': 'インターン',
-};
 
 export default async function JobDetailPage({ params }: Props) {
   const { slug } = await params;
@@ -83,7 +78,7 @@ export default async function JobDetailPage({ params }: Props) {
           <h2 className="text-xl font-bold text-gray-900 border-b pb-3">仕事内容</h2>
           <div
             className="mt-4 prose prose-gray max-w-none"
-            dangerouslySetInnerHTML={{ __html: job.description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }}
           />
         </section>
       )}
@@ -94,7 +89,7 @@ export default async function JobDetailPage({ params }: Props) {
           <h2 className="text-xl font-bold text-gray-900 border-b pb-3">応募条件</h2>
           <div
             className="mt-4 prose prose-gray max-w-none"
-            dangerouslySetInnerHTML={{ __html: job.requirements }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.requirements) }}
           />
         </section>
       )}

@@ -77,8 +77,13 @@ async function bulkDelete() {
   });
   if (!ok) return;
   try {
-    await Promise.all([...selectedIds.value].map((id) => api.delete(`/admin/jobs/${id}`)));
-    toast.success(`${selectedIds.value.size} 件の求人を削除しました`);
+    const results = await Promise.allSettled(
+      [...selectedIds.value].map((id) => api.delete(`/admin/jobs/${id}`)),
+    );
+    const succeeded = results.filter((r) => r.status === 'fulfilled').length;
+    const failed = results.filter((r) => r.status === 'rejected').length;
+    if (succeeded > 0) toast.success(`${succeeded} 件の求人を削除しました`);
+    if (failed > 0) toast.error(`${failed} 件の削除に失敗しました`);
     await fetchJobs();
   } catch {
     toast.error('一括削除に失敗しました');

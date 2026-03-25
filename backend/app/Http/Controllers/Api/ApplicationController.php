@@ -148,32 +148,34 @@ class ApplicationController extends Controller
     )]
     public function export(): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $applications = Application::with('jobPosting')->orderByDesc('created_at')->get();
-
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="applications_' . date('Ymd') . '.csv"',
         ];
 
-        return response()->stream(function () use ($applications) {
+        return response()->stream(function () {
             $handle = fopen('php://output', 'w');
             // BOM for Excel
             fwrite($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, ['ID', '求人名', '氏名', 'メール', '電話', '年齢', 'ステータス', '応募日']);
 
-            foreach ($applications as $app) {
-                fputcsv($handle, [
-                    $app->id,
-                    $app->jobPosting?->title,
-                    $app->name,
-                    $app->email,
-                    $app->phone,
-                    $app->age,
-                    $app->status,
-                    $app->created_at->format('Y-m-d H:i'),
-                ]);
-            }
+            Application::with('jobPosting')
+                ->orderByDesc('created_at')
+                ->chunk(500, function ($applications) use ($handle) {
+                    foreach ($applications as $app) {
+                        fputcsv($handle, [
+                            $app->id,
+                            $app->jobPosting?->title ?? '',
+                            $app->name,
+                            $app->email,
+                            $app->phone,
+                            $app->age,
+                            $app->status,
+                            $app->created_at->format('Y-m-d H:i'),
+                        ]);
+                    }
+                });
 
             fclose($handle);
         }, 200, $headers);

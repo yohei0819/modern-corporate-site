@@ -6,19 +6,13 @@ import Pagination from '@/components/common/Pagination';
 import EmptyState from '@/components/common/EmptyState';
 import JobFilter from '@/components/common/JobFilter';
 import { defineMetadata } from '@/lib/metadata';
+import { employmentTypeLabels } from '@/lib/constants';
 
 export const metadata = defineMetadata(
   '募集職種',
   'CORP.の募集職種一覧です。エンジニア、デザイナーなど多様なポジションで採用を行っています。',
   '/jobs',
 );
-
-const employmentTypeLabels: Record<string, string> = {
-  'full-time': '正社員',
-  'contract': '契約社員',
-  'part-time': 'パートタイム',
-  'intern': 'インターン',
-};
 
 export default async function JobsPage({
   searchParams,

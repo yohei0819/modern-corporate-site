@@ -33,6 +33,8 @@ onMounted(async () => {
   try {
     const { data } = await api.get<{ data: Application }>(`/admin/applications/${route.params.id}`);
     application.value = data.data;
+  } catch {
+    toast.error('応募情報の取得に失敗しました');
   } finally {
     loading.value = false;
   }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
@@ -51,16 +52,22 @@ class MediaController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->store('media', 'public');
 
-        $media = Media::create([
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-        ]);
+        try {
+            $path = $file->store('media', 'public');
 
-        return response()->json(['data' => $media], 201);
+            $media = Media::create([
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+            ]);
+
+            return response()->json(['data' => $media], 201);
+        } catch (\Exception $e) {
+            Log::error('File upload failed: ' . $e->getMessage());
+            return response()->json(['message' => 'ファイルのアップロードに失敗しました'], 500);
+        }
     }
 
     #[OA\Delete(
@@ -73,10 +80,14 @@ class MediaController extends Controller
     )]
     public function destroy(Media $media): JsonResponse
     {
-        Storage::disk('public')->delete($media->file_path);
+        try {
+            Storage::disk('public')->delete($media->file_path);
+            $media->delete();
 
-        $media->delete();
-
-        return response()->json(null, 204);
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            Log::error('File deletion failed: ' . $e->getMessage());
+            return response()->json(['message' => 'ファイルの削除に失敗しました'], 500);
+        }
     }
 }

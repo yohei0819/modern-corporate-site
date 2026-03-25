@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMember } from '@/lib/api';
+import { sanitizeHtml } from '@/lib/sanitize';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -79,7 +80,7 @@ export default async function MemberDetailPage({ params }: Props) {
         <h2 className="text-xl font-bold text-gray-900 border-b pb-3">インタビュー</h2>
         <div
           className="mt-6 prose prose-gray max-w-none"
-          dangerouslySetInnerHTML={{ __html: member.message }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(member.message) }}
         />
       </section>
 

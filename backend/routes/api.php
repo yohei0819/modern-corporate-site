@@ -77,8 +77,8 @@ Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
     Route::delete('/admin/news/{news}', [NewsController::class, 'destroy']);
 
     // 応募管理
-    Route::get('/admin/applications', [ApplicationController::class, 'adminIndex']);
     Route::get('/admin/applications/export', [ApplicationController::class, 'export']);
+    Route::get('/admin/applications', [ApplicationController::class, 'adminIndex']);
     Route::get('/admin/applications/{application}', [ApplicationController::class, 'adminShow']);
     Route::put('/admin/applications/{application}/status', [ApplicationController::class, 'updateStatus']);
 

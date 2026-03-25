@@ -4,9 +4,11 @@ import { useRouter } from 'vue-router';
 import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
+import { useToast } from '@/stores/toast';
 import type { Application, PaginatedResponse } from '@/types';
 
 const router = useRouter();
+const toast = useToast();
 const applications = ref<Application[]>([]);
 const currentPage = ref(1);
 const lastPage = ref(1);
@@ -36,13 +38,17 @@ async function fetchApplications() {
 }
 
 async function exportCsv() {
-  const { data } = await api.get('/admin/applications/export', { responseType: 'blob' });
-  const url = URL.createObjectURL(data);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'applications.csv';
-  a.click();
-  URL.revokeObjectURL(url);
+  try {
+    const { data } = await api.get('/admin/applications/export', { responseType: 'blob' });
+    const url = URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'applications.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch {
+    toast.error('CSVのエクスポートに失敗しました');
+  }
 }
 
 watch(currentPage, fetchApplications);

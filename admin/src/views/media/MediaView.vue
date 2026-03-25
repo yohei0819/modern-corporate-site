@@ -18,6 +18,8 @@ async function fetchMedia() {
   try {
     const { data } = await api.get<{ data: Media[] }>('/admin/media');
     mediaList.value = data.data ?? data;
+  } catch {
+    toast.error('メディアの読み込みに失敗しました');
   } finally {
     loading.value = false;
   }
@@ -80,9 +82,13 @@ async function deleteMedia(id: number) {
   }
 }
 
-function copyUrl(url: string) {
-  navigator.clipboard.writeText(url);
-  toast.info('URL をコピーしました');
+async function copyUrl(url: string) {
+  try {
+    await navigator.clipboard.writeText(url);
+    toast.info('URL をコピーしました');
+  } catch {
+    toast.error('URL のコピーに失敗しました');
+  }
 }
 
 onMounted(fetchMedia);

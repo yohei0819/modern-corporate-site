@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getJobs, getMembers, getNewsList } from '@/lib/api';
+import { employmentTypeLabels } from '@/lib/constants';
 import SectionTitle from '@/components/common/SectionTitle';
 import Badge from '@/components/common/Badge';
 import FadeIn from '@/components/common/FadeIn';
@@ -67,7 +68,7 @@ export default async function HomePage() {
                   className="group block rounded-xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
                 >
                   <span className="inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-primary">
-                    {job.employment_type === 'full-time' ? '正社員' : job.employment_type === 'contract' ? '契約社員' : job.employment_type === 'part-time' ? 'パートタイム' : job.employment_type}
+                    {employmentTypeLabels[job.employment_type] || job.employment_type}
                   </span>
                   <h3 className="mt-3 text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
                     {job.title}

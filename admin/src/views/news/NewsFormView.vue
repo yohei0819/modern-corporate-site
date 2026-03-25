@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { isAxiosError } from 'axios';
 import api from '@/services/api';
@@ -58,6 +58,8 @@ onMounted(async () => {
         published_at: n.published_at?.slice(0, 16) ?? '',
       };
       if (n.thumbnail) thumbnailPreview.value = n.thumbnail;
+    } catch {
+      toast.error('お知らせ情報の取得に失敗しました');
     } finally {
       fetching.value = false;
     }
@@ -69,9 +71,18 @@ onMounted(async () => {
 function handleThumbnailChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
+  if (thumbnailPreview.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(thumbnailPreview.value);
+  }
   thumbnailFile.value = file;
   thumbnailPreview.value = URL.createObjectURL(file);
 }
+
+onBeforeUnmount(() => {
+  if (thumbnailPreview.value?.startsWith('blob:')) {
+    URL.revokeObjectURL(thumbnailPreview.value);
+  }
+});
 
 async function handleSubmit() {
   if (!validateClient()) return;
