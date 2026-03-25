@@ -15,9 +15,11 @@ services:
       - key: APP_DEBUG
         value: "false"
       - key: APP_KEY
-        generateValue: true
+        value: "base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg="
       - key: DB_CONNECTION
         value: sqlite
+      - key: DB_DATABASE
+        value: /var/www/database/database.sqlite
       - key: MAIL_MAILER
         value: log
       - key: CACHE_STORE
