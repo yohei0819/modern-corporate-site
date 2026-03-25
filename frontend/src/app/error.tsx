@@ -3,12 +3,13 @@
 import Link from 'next/link';
 
 export default function Error({
-  error,
+  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  void _error;
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
       <span className="text-6xl" role="img" aria-hidden="true">

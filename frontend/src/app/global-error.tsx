@@ -1,12 +1,13 @@
 'use client';
 
 export default function GlobalError({
-  error,
+  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  void _error;
   return (
     <html lang="ja">
       <body className="min-h-screen flex items-center justify-center bg-gray-50 font-sans antialiased">
