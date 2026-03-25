@@ -99,7 +99,7 @@ async function handleSubmit() {
     if (imageFile.value) fd.append('profile_image', imageFile.value);
     const config = {
       headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: (e: ProgressEvent) => {
+      onUploadProgress: (e: { loaded: number; total?: number }) => {
         uploadProgress.value = e.total ? Math.round((e.loaded / e.total) * 100) : 0;
       },
     };

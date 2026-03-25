@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import ThemeProvider from '@/components/ThemeProvider';
 import { organizationJsonLd, webSiteJsonLd } from '@/lib/json-ld';
 
 const geistSans = Geist({
@@ -50,21 +51,23 @@ export default function RootLayout({
         <link rel="preconnect" href="https://recruit-api-sop3.onrender.com" />
         <link rel="dns-prefetch" href="https://recruit-api-sop3.onrender.com" />
       </head>
-      <body className="min-h-full flex flex-col font-sans antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
-        />
-        <a href="#main-content" className="skip-link">
-          メインコンテンツへスキップ
-        </a>
-        <Header />
-        <main id="main-content" className="flex-1 page-transition">{children}</main>
-        <Footer />
+      <body className="min-h-full flex flex-col font-sans antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors">
+        <ThemeProvider>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
+          />
+          <a href="#main-content" className="skip-link">
+            メインコンテンツへスキップ
+          </a>
+          <Header />
+          <main id="main-content" className="flex-1 page-transition">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

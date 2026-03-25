@@ -1,0 +1,17 @@
+{
+  "name": "modern-corporate-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "採用広報サイト + 応募管理ダッシュボード",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,vue,js,mjs,css,json,md}": "prettier --write"
+  }
+}
