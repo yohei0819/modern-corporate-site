@@ -5,6 +5,7 @@
   "outputDirectory": ".next",
   "installCommand": "npm ci",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://recruit-api-sop3.onrender.com/api"
+    "API_URL": "https://recruit-api-sop3.onrender.com",
+    "NEXT_PUBLIC_API_URL": "https://recruit-api-sop3.onrender.com"
   }
 }
