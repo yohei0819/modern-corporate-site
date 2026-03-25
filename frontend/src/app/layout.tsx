@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { organizationJsonLd, webSiteJsonLd } from '@/lib/json-ld';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
   description: 'テクノロジーで未来を創る。CORP.の採用情報サイトです。募集職種、社員紹介、働く環境など採用に関する情報をお届けします。',
   metadataBase: new URL('https://frontend-yohei0819.vercel.app'),
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   openGraph: {
     type: 'website',
@@ -50,6 +51,14 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://recruit-api-sop3.onrender.com" />
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
+        />
         <a href="#main-content" className="skip-link">
           メインコンテンツへスキップ
         </a>

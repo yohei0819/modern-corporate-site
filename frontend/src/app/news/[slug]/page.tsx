@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getNewsDetail } from '@/lib/api';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { articleJsonLd } from '@/lib/json-ld';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
 import { notFound } from 'next/navigation';
@@ -43,6 +44,10 @@ export default async function NewsDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(article)) }}
+      />
       <Breadcrumb
         items={[
           { label: 'お知らせ', href: '/news' },

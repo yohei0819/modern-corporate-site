@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getJob } from '@/lib/api';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { employmentTypeLabels } from '@/lib/constants';
+import { jobPostingJsonLd } from '@/lib/json-ld';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -37,6 +38,10 @@ export default async function JobDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd(job)) }}
+      />
       <Breadcrumb
         items={[
           { label: '募集職種', href: '/jobs' },
