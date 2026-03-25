@@ -22,13 +22,11 @@ async function fetchApi<T>(
 
 export async function getJobs(params?: {
   employment_type?: string;
-  category?: string;
   location?: string;
   page?: number;
 }) {
   const query = new URLSearchParams();
   if (params?.employment_type) query.set('employment_type', params.employment_type);
-  if (params?.category) query.set('category', params.category);
   if (params?.location) query.set('location', params.location);
   if (params?.page) query.set('page', String(params.page));
   const qs = query.toString();

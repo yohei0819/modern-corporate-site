@@ -41,7 +41,15 @@ class JobPostingController extends Controller
 
         $jobs = $query->paginate(12);
 
-        return response()->json($jobs);
+        return response()->json([
+            'data' => $jobs->items(),
+            'meta' => [
+                'current_page' => $jobs->currentPage(),
+                'last_page' => $jobs->lastPage(),
+                'per_page' => $jobs->perPage(),
+                'total' => $jobs->total(),
+            ],
+        ]);
     }
 
     /**

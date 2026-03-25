@@ -21,13 +21,28 @@ class MemberController extends Controller
         tags: ['Members'],
         responses: [new OA\Response(response: 200, description: '社員一覧')],
     )]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $members = Member::published()
             ->orderBy('sort_order')
-            ->get();
+            ->paginate(12);
 
-        return response()->json(['data' => $members]);
+        $members->getCollection()->transform(function ($member) {
+            if ($member->profile_image) {
+                $member->profile_image = url('storage/' . $member->profile_image);
+            }
+            return $member;
+        });
+
+        return response()->json([
+            'data' => $members->items(),
+            'meta' => [
+                'current_page' => $members->currentPage(),
+                'last_page' => $members->lastPage(),
+                'per_page' => $members->perPage(),
+                'total' => $members->total(),
+            ],
+        ]);
     }
 
     #[OA\Get(
@@ -43,6 +58,10 @@ class MemberController extends Controller
     public function show(string $slug): JsonResponse
     {
         $member = Member::published()->where('slug', $slug)->firstOrFail();
+
+        if ($member->profile_image) {
+            $member->profile_image = url('storage/' . $member->profile_image);
+        }
 
         return response()->json(['data' => $member]);
     }

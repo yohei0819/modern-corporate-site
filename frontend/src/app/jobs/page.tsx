@@ -22,10 +22,9 @@ export default async function JobsPage({
   const params = await searchParams;
   const page = Number(params.page) || 1;
   const employment_type = typeof params.employment_type === 'string' ? params.employment_type : undefined;
-  const category = typeof params.category === 'string' ? params.category : undefined;
   const location = typeof params.location === 'string' ? params.location : undefined;
 
-  const res = await getJobs({ page, employment_type, category, location }).catch(() => ({
+  const res = await getJobs({ page, employment_type, location }).catch(() => ({
     data: [],
     meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 },
   }));

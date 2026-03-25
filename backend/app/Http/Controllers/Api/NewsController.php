@@ -35,7 +35,15 @@ class NewsController extends Controller
 
         $news = $query->paginate(12);
 
-        return response()->json($news);
+        return response()->json([
+            'data' => $news->items(),
+            'meta' => [
+                'current_page' => $news->currentPage(),
+                'last_page' => $news->lastPage(),
+                'per_page' => $news->perPage(),
+                'total' => $news->total(),
+            ],
+        ]);
     }
 
     #[OA\Get(

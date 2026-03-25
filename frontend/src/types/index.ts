@@ -3,7 +3,6 @@ export interface JobPosting {
   title: string;
   slug: string;
   employment_type: string;
-  category: string;
   location: string;
   salary_text: string;
   summary: string;
