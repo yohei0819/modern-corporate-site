@@ -1,6 +1,10 @@
 # 採用広報サイト + 応募管理ダッシュボード
 
 [![CI](https://github.com/yohei0819/modern-corporate-site/actions/workflows/ci.yml/badge.svg)](https://github.com/yohei0819/modern-corporate-site/actions/workflows/ci.yml)
+![Frontend Coverage](https://img.shields.io/badge/Frontend_Coverage-74%25-yellow)
+![Admin Coverage](https://img.shields.io/badge/Admin_Coverage-60%25-yellow)
+![Backend Tests](https://img.shields.io/badge/Backend_Tests-85_passed-brightgreen)
+![E2E Tests](https://img.shields.io/badge/E2E_Tests-54_specs-blue)
 
 架空の企業「モダンコーポレート」の**採用広報サイト（公開面）**と**応募管理ダッシュボード（管理面）**を、フロントエンド 2 種 + バックエンド API の 3 層構成で開発したポートフォリオ作品です。
 
@@ -62,7 +66,7 @@
 | DB テーブル | 7 |
 | Feature テスト | 85（179 アサーション） |
 | フロントエンド単体テスト | 54（Vitest） |
-| E2E テスト | 42（Playwright） |
+| E2E テスト | 54（Playwright） |
 | Swagger ドキュメント | 34 オペレーション |
 | 公開サイト ページ | 12 |
 | 管理画面 ビュー | 16 |
@@ -285,7 +289,7 @@ cd backend && php artisan test
 
 ### E2E テスト (Playwright)
 
-Playwright による公開サイト + 管理画面の E2E テスト — **42 テスト**
+Playwright による公開サイト + 管理画面の E2E テスト — **54 テスト**
 
 | テストファイル | テスト数 | カバー範囲 |
 |---------------|---------|------------|
@@ -293,8 +297,10 @@ Playwright による公開サイト + 管理画面の E2E テスト — **42 テ
 | public/jobs.spec.ts | 6 | 求人一覧 / 詳細 / フィルタ / 応募ボタン |
 | public/content.spec.ts | 6 | 社員紹介 / お知らせ 一覧・詳細 |
 | public/pages.spec.ts | 8 | 静的ページ / コンタクト / エントリーフォーム |
+| public/user-flows.spec.ts | 5 | 検索→詳細→応募 / フォームステップ / ナビゲーション / レスポンシブ |
 | admin/auth.spec.ts | 6 | ログイン / バリデーション / リダイレクト |
 | admin/dashboard.spec.ts | 11 | ダッシュボード / CRUD 一覧・作成 / サイドバー |
+| admin/crud-flows.spec.ts | 7 | 求人 CRUD ライフサイクル / 一括削除 / 応募ステータス管理 / メディア |
 
 ```bash
 cd e2e && npm install && npx playwright install chromium

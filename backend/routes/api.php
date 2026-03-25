@@ -16,22 +16,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 // 求人
-Route::get('/jobs', [JobPostingController::class, 'index']);
-Route::get('/jobs/{slug}', [JobPostingController::class, 'show']);
+Route::middleware('throttle:public-api')->group(function () {
+    Route::get('/jobs', [JobPostingController::class, 'index']);
+    Route::get('/jobs/{slug}', [JobPostingController::class, 'show']);
 
-// 社員
-Route::get('/members', [MemberController::class, 'index']);
-Route::get('/members/{slug}', [MemberController::class, 'show']);
+    // 社員
+    Route::get('/members', [MemberController::class, 'index']);
+    Route::get('/members/{slug}', [MemberController::class, 'show']);
 
-// お知らせ
-Route::get('/news', [NewsController::class, 'index']);
-Route::get('/news/{slug}', [NewsController::class, 'show']);
+    // お知らせ
+    Route::get('/news', [NewsController::class, 'index']);
+    Route::get('/news/{slug}', [NewsController::class, 'show']);
+});
 
 // 応募（公開側）
-Route::post('/applications', [ApplicationController::class, 'store']);
-
-// 問い合わせ（公開側）
-Route::post('/inquiries', [InquiryController::class, 'store']);
+Route::middleware('throttle:form-submission')->group(function () {
+    Route::post('/applications', [ApplicationController::class, 'store']);
+    Route::post('/inquiries', [InquiryController::class, 'store']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -39,11 +41,15 @@ Route::post('/inquiries', [InquiryController::class, 'store']);
 |--------------------------------------------------------------------------
 */
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    // 設定（プロフィール・パスワード変更）
+    Route::put('/me/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/me/password', [AuthController::class, 'updatePassword']);
 
     /*
     |----------------------------------------------------------------------

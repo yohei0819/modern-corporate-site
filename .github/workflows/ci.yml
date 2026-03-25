@@ -71,10 +71,11 @@ jobs:
       - name: Unit Test
         run: npm test
 
+      - name: Coverage Report
+        run: npx vitest run --coverage
+
       - name: Build
         run: npm run build
-
-  # --- Admin Type Check & Build ---
   admin-check:
     name: Admin (TypeCheck + Build)
     runs-on: ubuntu-latest
@@ -100,6 +101,9 @@ jobs:
 
       - name: Unit Test
         run: npm test
+
+      - name: Coverage Report
+        run: npx vitest run --coverage
 
       - name: Build
         run: npm run build

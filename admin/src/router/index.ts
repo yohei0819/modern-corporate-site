@@ -106,6 +106,13 @@ const router = createRouter({
       component: () => import('@/views/media/MediaView.vue'),
       meta: { requiresAuth: true },
     },
+    // 設定
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/views/settings/SettingsView.vue'),
+      meta: { requiresAuth: true },
+    },
     // 404
     {
       path: '/:pathMatch(.*)*',

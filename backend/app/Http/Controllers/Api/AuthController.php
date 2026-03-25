@@ -87,4 +87,85 @@ class AuthController extends Controller
             'user' => $request->user(),
         ]);
     }
+
+    #[OA\Put(
+        path: '/me/profile',
+        summary: 'プロフィール更新',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name', 'email'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'プロフィール更新成功'),
+            new OA\Response(response: 422, description: 'バリデーションエラー'),
+        ],
+    )]
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'プロフィールを更新しました。',
+            'user' => $user->fresh(),
+        ]);
+    }
+
+    #[OA\Put(
+        path: '/me/password',
+        summary: 'パスワード変更',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['current_password', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'current_password', type: 'string'),
+                    new OA\Property(property: 'password', type: 'string'),
+                    new OA\Property(property: 'password_confirmation', type: 'string'),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'パスワード変更成功'),
+            new OA\Response(response: 422, description: 'バリデーションエラー'),
+        ],
+    )]
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'message' => '現在のパスワードが正しくありません。',
+                'errors' => ['current_password' => ['現在のパスワードが正しくありません。']],
+            ], 422);
+        }
+
+        $user->update(['password' => $validated['password']]);
+
+        return response()->json([
+            'message' => 'パスワードを変更しました。',
+        ]);
+    }
 }
