@@ -9,6 +9,7 @@
 | サービス | URL |
 |----------|-----|
 | 公開サイト (Next.js) | https://frontend-yohei0819.vercel.app |
+| 管理画面 (Vue 3) | https://yohei0819.github.io/modern-corporate-site/ |
 | API サーバー (Laravel) | https://recruit-api-sop3.onrender.com |
 
 > ⚠️ Render 無料プランのため、API サーバーは無アクセスが続くとスリープします。初回アクセス時に 30 秒ほどかかる場合があります。
