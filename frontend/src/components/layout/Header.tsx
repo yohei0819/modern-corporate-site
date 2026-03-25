@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
@@ -18,6 +18,17 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -27,7 +38,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1" aria-label="メインナビゲーション">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -37,6 +48,7 @@ export default function Header() {
                     ? 'text-primary bg-blue-50'
                     : 'text-gray-700 hover:text-primary hover:bg-gray-50'
                 }`}
+                aria-current={pathname.startsWith(item.href) ? 'page' : undefined}
               >
                 {item.label}
               </Link>
@@ -54,7 +66,8 @@ export default function Header() {
             type="button"
             className="lg:hidden p-2 text-gray-700"
             onClick={() => setIsOpen(!isOpen)}
-            aria-label="メニューを開く"
+            aria-expanded={isOpen}
+            aria-label={isOpen ? 'メニューを閉じる' : 'メニューを開く'}
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               {isOpen ? (
@@ -68,33 +81,37 @@ export default function Header() {
       </div>
 
       {/* Mobile menu */}
-      {isOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white">
-          <nav className="space-y-1 px-4 py-3">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`block rounded-md px-3 py-2 text-base font-medium ${
-                  pathname.startsWith(item.href)
-                    ? 'text-primary bg-blue-50'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+      <div
+        className={`lg:hidden border-t border-gray-100 bg-white overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+        }`}
+        aria-hidden={!isOpen}
+      >
+        <nav className="space-y-1 px-4 py-3" aria-label="モバイルナビゲーション">
+          {navItems.map((item) => (
             <Link
-              href="/entry"
-              className="block mt-2 text-center rounded-full bg-primary px-5 py-2.5 text-base font-semibold text-white"
-              onClick={() => setIsOpen(false)}
+              key={item.href}
+              href={item.href}
+              className={`block rounded-md px-3 py-2 text-base font-medium ${
+                pathname.startsWith(item.href)
+                  ? 'text-primary bg-blue-50'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+              tabIndex={isOpen ? 0 : -1}
+              aria-current={pathname.startsWith(item.href) ? 'page' : undefined}
             >
-              エントリー
+              {item.label}
             </Link>
-          </nav>
-        </div>
-      )}
+          ))}
+          <Link
+            href="/entry"
+            className="block mt-2 text-center rounded-full bg-primary px-5 py-2.5 text-base font-semibold text-white"
+            tabIndex={isOpen ? 0 : -1}
+          >
+            エントリー
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 }

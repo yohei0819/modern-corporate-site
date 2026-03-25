@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getJobs } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Pagination from '@/components/common/Pagination';
+import EmptyState from '@/components/common/EmptyState';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -65,12 +66,13 @@ export default async function JobsPage({
           <Pagination currentPage={res.meta.current_page} lastPage={res.meta.last_page} />
         </>
       ) : (
-        <div className="mt-16 text-center">
-          <p className="text-gray-500">現在募集中の職種はありません。</p>
-          <Link href="/" className="mt-4 inline-block text-sm text-primary hover:underline">
-            トップに戻る
-          </Link>
-        </div>
+        <EmptyState
+          icon="💼"
+          title="現在募集中の職種はありません"
+          description="新しい募集が開始された際にこちらに掲載されます。"
+          actionLabel="トップに戻る"
+          actionHref="/"
+        />
       )}
     </div>
   );

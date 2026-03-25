@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getMembers } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Pagination from '@/components/common/Pagination';
+import EmptyState from '@/components/common/EmptyState';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -40,9 +42,11 @@ export default async function MembersPage({
               >
                 <div className="mx-auto h-40 w-40 overflow-hidden rounded-full bg-gray-200">
                   {member.profile_image && (
-                    <img
+                    <Image
                       src={member.profile_image}
                       alt={member.name}
+                      width={160}
+                      height={160}
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
@@ -58,7 +62,15 @@ export default async function MembersPage({
           <Pagination currentPage={res.meta.current_page} lastPage={res.meta.last_page} />
         </>
       ) : (
-        <p className="mt-16 text-center text-gray-500">社員紹介は準備中です。</p>
+        <p className="mt-16 text-center text-gray-500">
+          <EmptyState
+            icon="👥"
+            title="社員紹介は準備中です"
+            description="現在コンテンツを準備しています。"
+            actionLabel="トップに戻る"
+            actionHref="/"
+          />
+        </p>
       )}
     </div>
   );
