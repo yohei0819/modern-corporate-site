@@ -8,9 +8,22 @@ use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'News', description: 'お知らせ')]
+#[OA\Tag(name: 'Admin/News', description: 'お知らせ管理')]
 class NewsController extends Controller
 {
+    #[OA\Get(
+        path: '/news',
+        summary: 'お知らせ一覧（公開）',
+        tags: ['News'],
+        parameters: [
+            new OA\Parameter(name: 'category', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'お知らせ一覧')],
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = News::published()->orderByDesc('published_at');
@@ -24,6 +37,16 @@ class NewsController extends Controller
         return response()->json($news);
     }
 
+    #[OA\Get(
+        path: '/news/{slug}',
+        summary: 'お知らせ詳細（公開）',
+        tags: ['News'],
+        parameters: [new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
+        responses: [
+            new OA\Response(response: 200, description: 'お知らせ詳細'),
+            new OA\Response(response: 404, description: '見つからない'),
+        ],
+    )]
     public function show(string $slug): JsonResponse
     {
         $news = News::published()->where('slug', $slug)->firstOrFail();
@@ -31,6 +54,18 @@ class NewsController extends Controller
         return response()->json(['data' => $news]);
     }
 
+    #[OA\Get(
+        path: '/admin/news',
+        summary: 'お知らせ一覧（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/News'],
+        parameters: [
+            new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'category', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'お知らせ一覧')],
+    )]
     public function adminIndex(Request $request): JsonResponse
     {
         $query = News::orderByDesc('created_at');
@@ -47,6 +82,14 @@ class NewsController extends Controller
         return response()->json($news);
     }
 
+    #[OA\Post(
+        path: '/admin/news',
+        summary: 'お知らせ作成',
+        security: [['sanctum' => []]],
+        tags: ['Admin/News'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(type: 'object'))),
+        responses: [new OA\Response(response: 201, description: '作成成功')],
+    )]
     public function store(NewsRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -61,6 +104,15 @@ class NewsController extends Controller
         return response()->json(['data' => $news], 201);
     }
 
+    #[OA\Put(
+        path: '/admin/news/{news}',
+        summary: 'お知らせ更新',
+        security: [['sanctum' => []]],
+        tags: ['Admin/News'],
+        parameters: [new OA\Parameter(name: 'news', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(type: 'object'))),
+        responses: [new OA\Response(response: 200, description: '更新成功')],
+    )]
     public function update(NewsRequest $request, News $news): JsonResponse
     {
         $data = $request->validated();
@@ -78,6 +130,14 @@ class NewsController extends Controller
         return response()->json(['data' => $news]);
     }
 
+    #[OA\Delete(
+        path: '/admin/news/{news}',
+        summary: 'お知らせ削除',
+        security: [['sanctum' => []]],
+        tags: ['Admin/News'],
+        parameters: [new OA\Parameter(name: 'news', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 204, description: '削除成功')],
+    )]
     public function destroy(News $news): JsonResponse
     {
         if ($news->thumbnail) {

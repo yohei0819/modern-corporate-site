@@ -8,9 +8,18 @@ use App\Models\Member;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Members', description: '社員')]
+#[OA\Tag(name: 'Admin/Members', description: '社員管理')]
 class MemberController extends Controller
 {
+    #[OA\Get(
+        path: '/members',
+        summary: '社員一覧（公開）',
+        tags: ['Members'],
+        responses: [new OA\Response(response: 200, description: '社員一覧')],
+    )]
     public function index(): JsonResponse
     {
         $members = Member::published()
@@ -20,6 +29,16 @@ class MemberController extends Controller
         return response()->json(['data' => $members]);
     }
 
+    #[OA\Get(
+        path: '/members/{slug}',
+        summary: '社員詳細（公開）',
+        tags: ['Members'],
+        parameters: [new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string'))],
+        responses: [
+            new OA\Response(response: 200, description: '社員詳細'),
+            new OA\Response(response: 404, description: '見つからない'),
+        ],
+    )]
     public function show(string $slug): JsonResponse
     {
         $member = Member::published()->where('slug', $slug)->firstOrFail();
@@ -27,6 +46,17 @@ class MemberController extends Controller
         return response()->json(['data' => $member]);
     }
 
+    #[OA\Get(
+        path: '/admin/members',
+        summary: '社員一覧（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Members'],
+        parameters: [
+            new OA\Parameter(name: 'department', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: '社員一覧')],
+    )]
     public function adminIndex(Request $request): JsonResponse
     {
         $query = Member::orderBy('sort_order');
@@ -40,6 +70,14 @@ class MemberController extends Controller
         return response()->json($members);
     }
 
+    #[OA\Post(
+        path: '/admin/members',
+        summary: '社員作成',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Members'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(type: 'object'))),
+        responses: [new OA\Response(response: 201, description: '作成成功')],
+    )]
     public function store(MemberRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -54,6 +92,15 @@ class MemberController extends Controller
         return response()->json(['data' => $member], 201);
     }
 
+    #[OA\Put(
+        path: '/admin/members/{member}',
+        summary: '社員更新',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Members'],
+        parameters: [new OA\Parameter(name: 'member', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(type: 'object'))),
+        responses: [new OA\Response(response: 200, description: '更新成功')],
+    )]
     public function update(MemberRequest $request, Member $member): JsonResponse
     {
         $data = $request->validated();
@@ -71,6 +118,14 @@ class MemberController extends Controller
         return response()->json(['data' => $member]);
     }
 
+    #[OA\Delete(
+        path: '/admin/members/{member}',
+        summary: '社員削除',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Members'],
+        parameters: [new OA\Parameter(name: 'member', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 204, description: '削除成功')],
+    )]
     public function destroy(Member $member): JsonResponse
     {
         if ($member->profile_image) {

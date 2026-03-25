@@ -7,9 +7,30 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Auth', description: '認証')]
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: '/login',
+        summary: 'ログイン',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'password', type: 'string'),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'ログイン成功'),
+            new OA\Response(response: 401, description: '認証失敗'),
+        ],
+    )]
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -35,6 +56,15 @@ class AuthController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: '/logout',
+        summary: 'ログアウト',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'ログアウト成功'),
+        ],
+    )]
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
@@ -42,6 +72,15 @@ class AuthController extends Controller
         return response()->json(['message' => 'ログアウトしました。']);
     }
 
+    #[OA\Get(
+        path: '/me',
+        summary: 'ログインユーザー情報',
+        security: [['sanctum' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'ユーザー情報'),
+        ],
+    )]
     public function me(Request $request): JsonResponse
     {
         return response()->json([

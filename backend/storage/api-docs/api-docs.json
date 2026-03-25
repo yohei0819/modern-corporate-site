@@ -1,0 +1,1176 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Recruit API",
+        "description": "採用広報サイト + 応募管理ダッシュボード API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/applications": {
+            "post": {
+                "tags": [
+                    "Applications"
+                ],
+                "summary": "応募送信（公開）",
+                "description": "公開側: 応募送信",
+                "operationId": "2b57cdaaa2f01ca15e070687f10ad613",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "応募完了"
+                    },
+                    "422": {
+                        "description": "バリデーションエラー"
+                    }
+                }
+            }
+        },
+        "/admin/applications": {
+            "get": {
+                "tags": [
+                    "Admin/Applications"
+                ],
+                "summary": "応募一覧（管理）",
+                "description": "管理側: 応募一覧",
+                "operationId": "af9a14825fd6f3f1e7fe972ed829cad0",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "応募一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/applications/{application}": {
+            "get": {
+                "tags": [
+                    "Admin/Applications"
+                ],
+                "summary": "応募詳細（管理）",
+                "description": "管理側: 応募詳細",
+                "operationId": "e6b6412337c1fb1b9d5bfaa10e7a1b98",
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "応募詳細"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/applications/{application}/status": {
+            "put": {
+                "tags": [
+                    "Admin/Applications"
+                ],
+                "summary": "応募ステータス更新",
+                "description": "管理側: ステータス更新",
+                "operationId": "5b6f2020eadb537e5ca689b6b5584e59",
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "unread",
+                                            "reviewing",
+                                            "interviewing",
+                                            "rejected",
+                                            "accepted"
+                                        ]
+                                    },
+                                    "admin_note": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/applications/export": {
+            "get": {
+                "tags": [
+                    "Admin/Applications"
+                ],
+                "summary": "応募 CSV エクスポート",
+                "description": "管理側: CSV エクスポート",
+                "operationId": "2088c1fdb04e60bb98f944b11195b374",
+                "responses": {
+                    "200": {
+                        "description": "CSV ファイル"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ログイン",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "ログイン成功"
+                    },
+                    "401": {
+                        "description": "認証失敗"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ログアウト",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "ログアウト成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ログインユーザー情報",
+                "operationId": "bc2032a379aa97707ccc61511897c120",
+                "responses": {
+                    "200": {
+                        "description": "ユーザー情報"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/inquiries": {
+            "post": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "問い合わせ送信（公開）",
+                "description": "公開側: 問い合わせ送信",
+                "operationId": "1cd5d3c54f3754afa8ae1e8c3636ae86",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "送信完了"
+                    },
+                    "422": {
+                        "description": "バリデーションエラー"
+                    }
+                }
+            }
+        },
+        "/admin/inquiries": {
+            "get": {
+                "tags": [
+                    "Admin/Inquiries"
+                ],
+                "summary": "問い合わせ一覧（管理）",
+                "description": "管理側: 問い合わせ一覧",
+                "operationId": "29b72c770c594f17dcc9f507ee2e42e7",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "問い合わせ一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/inquiries/{inquiry}": {
+            "get": {
+                "tags": [
+                    "Admin/Inquiries"
+                ],
+                "summary": "問い合わせ詳細（管理）",
+                "description": "管理側: 問い合わせ詳細",
+                "operationId": "ded95ae3a698a92c79e79bf271fa768f",
+                "parameters": [
+                    {
+                        "name": "inquiry",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "問い合わせ詳細"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin/Inquiries"
+                ],
+                "summary": "問い合わせ更新（管理）",
+                "description": "管理側: 対応済み / メモ更新",
+                "operationId": "f41a7f7c43cef27e96e6abe779e131c7",
+                "parameters": [
+                    {
+                        "name": "inquiry",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "enum": [
+                                            "unread",
+                                            "replied"
+                                        ]
+                                    },
+                                    "admin_note": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/jobs": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "求人一覧（公開）",
+                "description": "公開側: 求人一覧（published のみ）",
+                "operationId": "eda7f0ed621e65cfaceeb96ea64311ab",
+                "parameters": [
+                    {
+                        "name": "employment_type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "求人一覧"
+                    }
+                }
+            }
+        },
+        "/jobs/{slug}": {
+            "get": {
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "求人詳細（公開）",
+                "description": "公開側: 求人詳細（slug）",
+                "operationId": "4e7c01b403bbd6fa4ca7f5cdbcfcf2bc",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "求人詳細"
+                    },
+                    "404": {
+                        "description": "見つからない"
+                    }
+                }
+            }
+        },
+        "/admin/jobs": {
+            "get": {
+                "tags": [
+                    "Admin/Jobs"
+                ],
+                "summary": "求人一覧（管理）",
+                "description": "管理側: 求人一覧（全件）",
+                "operationId": "8164dfce5fee93415011f63728431ffc",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "求人一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin/Jobs"
+                ],
+                "summary": "求人作成",
+                "description": "管理側: 求人作成",
+                "operationId": "5fee0569683e7b5127854a419d344d21",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "作成成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/jobs/{job_posting}": {
+            "get": {
+                "tags": [
+                    "Admin/Jobs"
+                ],
+                "summary": "求人詳細（管理）",
+                "description": "管理側: 求人詳細",
+                "operationId": "faeb1e0d5f74b2cc20eaff8d1dca25b5",
+                "parameters": [
+                    {
+                        "name": "job_posting",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "求人詳細"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin/Jobs"
+                ],
+                "summary": "求人更新",
+                "description": "管理側: 求人更新",
+                "operationId": "1d6783cfc0b0f1d6337ff7bdb30eae53",
+                "parameters": [
+                    {
+                        "name": "job_posting",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin/Jobs"
+                ],
+                "summary": "求人削除",
+                "description": "管理側: 求人削除",
+                "operationId": "a2d974b90f726624ad4b0bdb4b20797c",
+                "parameters": [
+                    {
+                        "name": "job_posting",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "削除成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/media": {
+            "get": {
+                "tags": [
+                    "Admin/Media"
+                ],
+                "summary": "メディア一覧",
+                "operationId": "e858e24ba20eb59ee7f6e6699cc097f3",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "メディア一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin/Media"
+                ],
+                "summary": "メディアアップロード",
+                "operationId": "3517df0a72986953693aad59d24b5a2d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "アップロード成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/media/{media}": {
+            "delete": {
+                "tags": [
+                    "Admin/Media"
+                ],
+                "summary": "メディア削除",
+                "operationId": "4393617f7d25f60975b7e970e1158725",
+                "parameters": [
+                    {
+                        "name": "media",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "削除成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/members": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "社員一覧（公開）",
+                "operationId": "ffff12fc87590aad06f6e8282bd0831c",
+                "responses": {
+                    "200": {
+                        "description": "社員一覧"
+                    }
+                }
+            }
+        },
+        "/members/{slug}": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "社員詳細（公開）",
+                "operationId": "c8086787161aa806b9fb6b009c41e449",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "社員詳細"
+                    },
+                    "404": {
+                        "description": "見つからない"
+                    }
+                }
+            }
+        },
+        "/admin/members": {
+            "get": {
+                "tags": [
+                    "Admin/Members"
+                ],
+                "summary": "社員一覧（管理）",
+                "operationId": "f724a30dd6f2c3451a01c1e997c650f1",
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "社員一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin/Members"
+                ],
+                "summary": "社員作成",
+                "operationId": "4e59a8154b7b45478318640eeb100834",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "作成成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/members/{member}": {
+            "put": {
+                "tags": [
+                    "Admin/Members"
+                ],
+                "summary": "社員更新",
+                "operationId": "6e7568ef1bda07b0e737daf74323fd96",
+                "parameters": [
+                    {
+                        "name": "member",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin/Members"
+                ],
+                "summary": "社員削除",
+                "operationId": "47f93340f0d72839a3bf45df5b5a6dbb",
+                "parameters": [
+                    {
+                        "name": "member",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "削除成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/news": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "お知らせ一覧（公開）",
+                "operationId": "b83ff020eb45141b07c365e50a4b27bd",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "お知らせ一覧"
+                    }
+                }
+            }
+        },
+        "/news/{slug}": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "お知らせ詳細（公開）",
+                "operationId": "d6b1b57588ce607cc07682593acedd4d",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "お知らせ詳細"
+                    },
+                    "404": {
+                        "description": "見つからない"
+                    }
+                }
+            }
+        },
+        "/admin/news": {
+            "get": {
+                "tags": [
+                    "Admin/News"
+                ],
+                "summary": "お知らせ一覧（管理）",
+                "operationId": "073330a93887434c288427e09f53a8c4",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "お知らせ一覧"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin/News"
+                ],
+                "summary": "お知らせ作成",
+                "operationId": "639c0a5b847dee03515137a040a2fc16",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "作成成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/news/{news}": {
+            "put": {
+                "tags": [
+                    "Admin/News"
+                ],
+                "summary": "お知らせ更新",
+                "operationId": "beeedfce62bfc6e32c060c110ff9af15",
+                "parameters": [
+                    {
+                        "name": "news",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "更新成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin/News"
+                ],
+                "summary": "お知らせ削除",
+                "operationId": "031750e603ff885ed61d79e5ca86c530",
+                "parameters": [
+                    {
+                        "name": "news",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "削除成功"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "Sanctum Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Applications",
+            "description": "応募"
+        },
+        {
+            "name": "Admin/Applications",
+            "description": "応募管理"
+        },
+        {
+            "name": "Auth",
+            "description": "認証"
+        },
+        {
+            "name": "Inquiries",
+            "description": "問い合わせ"
+        },
+        {
+            "name": "Admin/Inquiries",
+            "description": "問い合わせ管理"
+        },
+        {
+            "name": "Jobs",
+            "description": "求人"
+        },
+        {
+            "name": "Admin/Jobs",
+            "description": "求人管理"
+        },
+        {
+            "name": "Admin/Media",
+            "description": "メディア管理"
+        },
+        {
+            "name": "Members",
+            "description": "社員"
+        },
+        {
+            "name": "Admin/Members",
+            "description": "社員管理"
+        },
+        {
+            "name": "News",
+            "description": "お知らせ"
+        },
+        {
+            "name": "Admin/News",
+            "description": "お知らせ管理"
+        }
+    ]
+}

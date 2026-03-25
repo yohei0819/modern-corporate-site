@@ -10,12 +10,25 @@ use App\Models\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Applications', description: '応募')]
+#[OA\Tag(name: 'Admin/Applications', description: '応募管理')]
 class ApplicationController extends Controller
 {
     /**
      * 公開側: 応募送信
      */
+    #[OA\Post(
+        path: '/applications',
+        summary: '応募送信（公開）',
+        tags: ['Applications'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(type: 'object'))),
+        responses: [
+            new OA\Response(response: 201, description: '応募完了'),
+            new OA\Response(response: 422, description: 'バリデーションエラー'),
+        ],
+    )]
     public function store(ApplicationRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -40,6 +53,18 @@ class ApplicationController extends Controller
     /**
      * 管理側: 応募一覧
      */
+    #[OA\Get(
+        path: '/admin/applications',
+        summary: '応募一覧（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Applications'],
+        parameters: [
+            new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'keyword', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: '応募一覧')],
+    )]
     public function adminIndex(Request $request): JsonResponse
     {
         $query = Application::with('jobPosting')->orderByDesc('created_at');
@@ -63,6 +88,14 @@ class ApplicationController extends Controller
     /**
      * 管理側: 応募詳細
      */
+    #[OA\Get(
+        path: '/admin/applications/{application}',
+        summary: '応募詳細（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Applications'],
+        parameters: [new OA\Parameter(name: 'application', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: '応募詳細')],
+    )]
     public function adminShow(Application $application): JsonResponse
     {
         $application->load('jobPosting');
@@ -73,6 +106,24 @@ class ApplicationController extends Controller
     /**
      * 管理側: ステータス更新
      */
+    #[OA\Put(
+        path: '/admin/applications/{application}/status',
+        summary: '応募ステータス更新',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Applications'],
+        parameters: [new OA\Parameter(name: 'application', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['status'],
+                properties: [
+                    new OA\Property(property: 'status', type: 'string', enum: ['unread', 'reviewing', 'interviewing', 'rejected', 'accepted']),
+                    new OA\Property(property: 'admin_note', type: 'string', nullable: true),
+                ],
+            ),
+        ),
+        responses: [new OA\Response(response: 200, description: '更新成功')],
+    )]
     public function updateStatus(Request $request, Application $application): JsonResponse
     {
         $validated = $request->validate([
@@ -88,6 +139,13 @@ class ApplicationController extends Controller
     /**
      * 管理側: CSV エクスポート
      */
+    #[OA\Get(
+        path: '/admin/applications/export',
+        summary: '応募 CSV エクスポート',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Applications'],
+        responses: [new OA\Response(response: 200, description: 'CSV ファイル')],
+    )]
     public function export(): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $applications = Application::with('jobPosting')->orderByDesc('created_at')->get();
