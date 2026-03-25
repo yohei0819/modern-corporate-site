@@ -27,6 +27,6 @@ services:
       - key: SANCTUM_STATEFUL_DOMAINS
         value: "*.vercel.app"
       - key: FRONTEND_URL
-        value: "https://modern-corporate-site.vercel.app"
+        value: "https://frontend-yohei0819.vercel.app"
       - key: ADMIN_URL
-        value: "https://modern-corporate-site.vercel.app"
+        value: "https://frontend-yohei0819.vercel.app"
