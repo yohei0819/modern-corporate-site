@@ -24,7 +24,7 @@ WORKDIR /var/www
 
 # Copy composer files first for cache
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer install --no-scripts --no-autoloader --prefer-dist
 
 # Copy application
 COPY . .
@@ -36,7 +36,7 @@ RUN echo "APP_KEY=base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg=" > .env \
     && echo "DB_DATABASE=/var/www/database/database.sqlite" >> .env
 
 # Generate autoloader
-RUN composer dump-autoload --optimize --no-dev
+RUN composer dump-autoload --optimize
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
