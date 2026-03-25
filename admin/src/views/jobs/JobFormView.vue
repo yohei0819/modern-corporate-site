@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { isAxiosError } from 'axios';
 import api from '@/services/api';
+import { useToast } from '@/stores/toast';
+import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import type { JobPosting, ApiValidationError } from '@/types';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 
 const isEdit = computed(() => !!route.params.id);
 const pageTitle = computed(() => isEdit.value ? '求人編集' : '求人作成');
@@ -28,6 +31,18 @@ const form = ref({
 const errors = ref<Record<string, string[]>>({});
 const loading = ref(false);
 const fetching = ref(false);
+
+const { isDirty, takeSnapshot, markClean } = useUnsavedChanges(() => ({ ...form.value }));
+
+function validateClient(): boolean {
+  const e: Record<string, string[]> = {};
+  if (!form.value.title.trim()) e.title = ['タイトルは必須です'];
+  if (!form.value.slug.trim()) e.slug = ['スラッグは必須です'];
+  if (!form.value.location.trim()) e.location = ['勤務地は必須です'];
+  if (!form.value.description.trim()) e.description = ['仕事内容は必須です'];
+  errors.value = e;
+  return Object.keys(e).length === 0;
+}
 
 onMounted(async () => {
   if (isEdit.value) {
@@ -52,9 +67,12 @@ onMounted(async () => {
       fetching.value = false;
     }
   }
+  await nextTick();
+  takeSnapshot();
 });
 
 async function handleSubmit() {
+  if (!validateClient()) return;
   errors.value = {};
   loading.value = true;
   try {
@@ -64,13 +82,19 @@ async function handleSubmit() {
     };
     if (isEdit.value) {
       await api.put(`/admin/jobs/${route.params.id}`, payload);
+      toast.success('求人を更新しました');
     } else {
       await api.post('/admin/jobs', payload);
+      toast.success('求人を作成しました');
     }
+    markClean();
     router.push({ name: 'jobs' });
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 422) {
       errors.value = (e.response.data as ApiValidationError).errors;
+      toast.error('入力内容にエラーがあります');
+    } else {
+      toast.error('保存に失敗しました');
     }
   } finally {
     loading.value = false;
@@ -85,7 +109,10 @@ function fieldError(field: string): string {
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle }}</h1>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-gray-900">{{ pageTitle }}</h1>
+        <span v-if="isDirty" class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">未保存</span>
+      </div>
       <button
         class="text-sm text-gray-500 hover:text-gray-700"
         @click="router.push({ name: 'jobs' })"

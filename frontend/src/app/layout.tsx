@@ -54,7 +54,7 @@ export default function RootLayout({
           メインコンテンツへスキップ
         </a>
         <Header />
-        <main id="main-content" className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1 page-transition">{children}</main>
         <Footer />
       </body>
     </html>

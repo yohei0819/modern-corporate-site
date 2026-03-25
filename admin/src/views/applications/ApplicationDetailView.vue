@@ -3,10 +3,12 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
+import { useToast } from '@/stores/toast';
 import type { Application } from '@/types';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 const application = ref<Application | null>(null);
 const loading = ref(true);
 const updating = ref(false);
@@ -42,6 +44,10 @@ async function updateStatus(status: string) {
   try {
     await api.put(`/admin/applications/${application.value.id}/status`, { status });
     application.value.status = status as Application['status'];
+    const label = statuses.find((s) => s.value === status)?.label ?? status;
+    toast.success(`ステータスを「${label}」に変更しました`);
+  } catch {
+    toast.error('ステータスの変更に失敗しました');
   } finally {
     updating.value = false;
   }

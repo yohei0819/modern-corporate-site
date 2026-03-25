@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { getJobs } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Pagination from '@/components/common/Pagination';
 import EmptyState from '@/components/common/EmptyState';
+import JobFilter from '@/components/common/JobFilter';
 import { defineMetadata } from '@/lib/metadata';
 
 export const metadata = defineMetadata(
@@ -40,6 +42,10 @@ export default async function JobsPage({
 
       <h1 className="text-3xl font-bold text-gray-900">募集職種</h1>
       <p className="mt-2 text-gray-500">あなたに合ったポジションを見つけてください。</p>
+
+      <Suspense fallback={null}>
+        <JobFilter />
+      </Suspense>
 
       {res.data.length > 0 ? (
         <>
