@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     template: '%s | CORP.',
   },
   description: 'テクノロジーで未来を創る。CORP.の採用情報サイトです。',
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: {
     type: 'website',
     locale: 'ja_JP',
