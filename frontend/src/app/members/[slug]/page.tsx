@@ -11,9 +11,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const res = await getMember(slug);
+    const title = `${res.data.name} - 社員紹介`;
+    const description = res.data.catch_copy;
     return {
-      title: `${res.data.name} - 社員紹介`,
-      description: res.data.catch_copy,
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: `https://frontend-yohei0819.vercel.app/members/${slug}`,
+        ...(res.data.profile_image ? { images: [{ url: res.data.profile_image }] } : {}),
+      },
+      twitter: { title, description },
     };
   } catch {
     return { title: '社員が見つかりません' };
@@ -49,6 +58,7 @@ export default async function MemberDetailPage({ params }: Props) {
                 alt={member.name}
                 width={224}
                 height={224}
+                sizes="224px"
                 className="h-full w-full object-cover"
                 priority
               />

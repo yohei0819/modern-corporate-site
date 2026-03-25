@@ -12,9 +12,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const res = await getNewsDetail(slug);
+    const title = res.data.title;
+    const description = res.data.excerpt || res.data.title;
     return {
-      title: res.data.title,
-      description: res.data.excerpt || res.data.title,
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: `https://frontend-yohei0819.vercel.app/news/${slug}`,
+        ...(res.data.thumbnail ? { images: [{ url: res.data.thumbnail }] } : {}),
+      },
+      twitter: { title, description },
     };
   } catch {
     return { title: '記事が見つかりません' };
@@ -57,6 +66,7 @@ export default async function NewsDetailPage({ params }: Props) {
               alt={article.title}
               width={800}
               height={450}
+              sizes="(max-width: 768px) 100vw, 800px"
               className="w-full h-auto"
               priority
             />

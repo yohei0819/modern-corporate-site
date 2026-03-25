@@ -1,11 +1,12 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import SectionTitle from '@/components/common/SectionTitle';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: '働く環境',
-  description: 'CORP.の働く環境、制度、福利厚生についてご紹介します。',
-};
+export const metadata = defineMetadata(
+  '働く環境',
+  'CORP.の働く環境、制度、福利厚生についてご紹介します。',
+  '/culture',
+);
 
 const benefits = [
   { icon: '🏠', title: 'リモートワーク', desc: '週3日までリモート勤務可能。地方在住メンバーも活躍中。' },

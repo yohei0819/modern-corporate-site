@@ -1,11 +1,12 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import FaqAccordion from '@/components/forms/FaqAccordion';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'FAQ',
-  description: 'CORP.の採用に関するよくある質問と回答をまとめました。',
-};
+export const metadata = defineMetadata(
+  'FAQ',
+  'CORP.の採用に関するよくある質問と回答をまとめました。',
+  '/faq',
+);
 
 export default function FaqPage() {
   return (

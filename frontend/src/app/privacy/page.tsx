@@ -1,10 +1,11 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'プライバシーポリシー',
-  description: 'CORP.のプライバシーポリシーについてご説明します。',
-};
+export const metadata = defineMetadata(
+  'プライバシーポリシー',
+  'CORP.のプライバシーポリシーについてご説明します。',
+  '/privacy',
+);
 
 export default function PrivacyPage() {
   return (

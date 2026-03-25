@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'お問い合わせ完了',
-};
+export const metadata = defineMetadata(
+  'お問い合わせ完了',
+  'お問い合わせを受け付けました。内容を確認の上、担当者よりご連絡いたします。',
+  '/contact/thanks',
+);
 
 export default function ContactThanksPage() {
   return (

@@ -116,6 +116,7 @@ export default async function HomePage() {
                         alt={member.name}
                         width={192}
                         height={192}
+                        sizes="192px"
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     )}

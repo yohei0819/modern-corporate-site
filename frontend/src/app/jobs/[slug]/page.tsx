@@ -10,9 +10,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const res = await getJob(slug);
+    const title = res.data.title;
+    const description = res.data.summary;
     return {
-      title: res.data.title,
-      description: res.data.summary,
+      title,
+      description,
+      openGraph: { title, description, url: `https://frontend-yohei0819.vercel.app/jobs/${slug}` },
+      twitter: { title, description },
     };
   } catch {
     return { title: '求人が見つかりません' };

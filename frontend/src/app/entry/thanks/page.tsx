@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'エントリー完了',
-};
+export const metadata = defineMetadata(
+  'エントリー完了',
+  'エントリーを受け付けました。選考結果は追ってご連絡いたします。',
+  '/entry/thanks',
+);
 
 export default function EntryThanksPage() {
   return (

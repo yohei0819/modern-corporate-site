@@ -1,11 +1,12 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import SectionTitle from '@/components/common/SectionTitle';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: '事業紹介',
-  description: 'CORP.の事業内容をご紹介します。SaaS、受託開発、コンサルティングの3つの事業を展開しています。',
-};
+export const metadata = defineMetadata(
+  '事業紹介',
+  'CORP.の事業内容をご紹介します。SaaS、受託開発、コンサルティングの3つの事業を展開しています。',
+  '/business',
+);
 
 const businesses = [
   {

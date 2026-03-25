@@ -1,12 +1,13 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import EntryForm from '@/components/forms/EntryForm';
 import { Suspense } from 'react';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'エントリー',
-  description: 'CORP.の求人にエントリーする。必要事項をご入力ください。',
-};
+export const metadata = defineMetadata(
+  'エントリー',
+  'CORP.の求人にエントリーする。必要事項をご入力ください。',
+  '/entry',
+);
 
 export default function EntryPage() {
   return (

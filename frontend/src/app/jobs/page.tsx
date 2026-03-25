@@ -3,12 +3,13 @@ import { getJobs } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Pagination from '@/components/common/Pagination';
 import EmptyState from '@/components/common/EmptyState';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: '募集職種',
-  description: 'CORP.の募集職種一覧です。エンジニア、デザイナーなど多様なポジションで採用を行っています。',
-};
+export const metadata = defineMetadata(
+  '募集職種',
+  'CORP.の募集職種一覧です。エンジニア、デザイナーなど多様なポジションで採用を行っています。',
+  '/jobs',
+);
 
 const employmentTypeLabels: Record<string, string> = {
   'full-time': '正社員',

@@ -3,12 +3,13 @@ import { getNewsList } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
 import Pagination from '@/components/common/Pagination';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'お知らせ',
-  description: 'CORP.の最新のお知らせ、プレスリリース、イベント情報をお届けします。',
-};
+export const metadata = defineMetadata(
+  'お知らせ',
+  'CORP.の最新のお知らせ、プレスリリース、イベント情報をお届けします。',
+  '/news',
+);
 
 const categories = [
   { value: '', label: 'すべて' },

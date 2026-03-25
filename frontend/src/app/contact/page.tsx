@@ -1,11 +1,12 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import ContactForm from '@/components/forms/ContactForm';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'お問い合わせ',
-  description: 'CORP.へのお問い合わせはこちらから。ご質問やご相談をお気軽にお寄せください。',
-};
+export const metadata = defineMetadata(
+  'お問い合わせ',
+  'CORP.へのお問い合わせはこちらから。ご質問やご相談をお気軽にお寄せください。',
+  '/contact',
+);
 
 export default function ContactPage() {
   return (

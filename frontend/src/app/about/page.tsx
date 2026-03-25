@@ -1,11 +1,12 @@
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import SectionTitle from '@/components/common/SectionTitle';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: '会社紹介',
-  description: 'CORP.の企業理念、ビジョン、沿革をご紹介します。',
-};
+export const metadata = defineMetadata(
+  '会社紹介',
+  'CORP.の企業理念、ビジョン、沿革をご紹介します。',
+  '/about',
+);
 
 const stats = [
   { label: '設立', value: '2015年' },

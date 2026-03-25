@@ -4,12 +4,13 @@ import { getMembers } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Pagination from '@/components/common/Pagination';
 import EmptyState from '@/components/common/EmptyState';
-import type { Metadata } from 'next';
+import { defineMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: '社員紹介',
-  description: 'CORP.で活躍する社員たちを紹介します。',
-};
+export const metadata = defineMetadata(
+  '社員紹介',
+  'CORP.で活躍する社員たちを紹介します。',
+  '/members',
+);
 
 export default async function MembersPage({
   searchParams,
@@ -47,6 +48,8 @@ export default async function MembersPage({
                       alt={member.name}
                       width={160}
                       height={160}
+                      sizes="160px"
+                      loading="lazy"
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
