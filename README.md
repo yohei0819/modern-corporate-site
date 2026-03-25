@@ -4,6 +4,15 @@
 
 架空の企業「モダンコーポレート」の**採用広報サイト（公開面）**と**応募管理ダッシュボード（管理面）**を、フロントエンド 2 種 + バックエンド API の 3 層構成で開発したポートフォリオ作品です。
 
+## 🌐 ライブデモ
+
+| サービス | URL |
+|----------|-----|
+| 公開サイト (Next.js) | https://frontend-yohei0819.vercel.app |
+| API サーバー (Laravel) | https://recruit-api-sop3.onrender.com |
+
+> ⚠️ Render 無料プランのため、API サーバーは無アクセスが続くとスリープします。初回アクセス時に 30 秒ほどかかる場合があります。
+
 ---
 
 ## 🔗 サービス構成
@@ -40,6 +49,7 @@
 | API エンドポイント | 39 |
 | DB テーブル | 7 |
 | Feature テスト | 85（179 アサーション） |
+| E2E テスト | 42（Playwright） |
 | 公開サイト ページ | 12 |
 | 管理画面 ビュー | 16 |
 
@@ -55,8 +65,10 @@
 | DB | MySQL | 8.x |
 | HTTP | Axios | 1.x |
 | テスト | PHPUnit | 12.x |
+| E2E テスト | Playwright | 1.x |
 | コンテナ | Docker Compose | - |
 | CI | GitHub Actions | - |
+| デプロイ | Vercel (frontend) + Render (backend) | - |
 
 ### なぜフロントを 2 つに分けたか
 
@@ -257,6 +269,26 @@ PHPUnit 12 による Laravel Feature テスト — **85 テスト / 179 アサ�
 cd backend && php artisan test
 ```
 
+### E2E テスト (Playwright)
+
+Playwright による公開サイト + 管理画面の E2E テスト — **42 テスト**
+
+| テストファイル | テスト数 | カバー範囲 |
+|---------------|---------|------------|
+| public/home.spec.ts | 5 | ヒーロー / ナビ / フッター / ページ遷移 |
+| public/jobs.spec.ts | 6 | 求人一覧 / 詳細 / フィルタ / 応募ボタン |
+| public/content.spec.ts | 6 | 社員紹介 / お知らせ 一覧・詳細 |
+| public/pages.spec.ts | 8 | 静的ページ / コンタクト / エントリーフォーム |
+| admin/auth.spec.ts | 6 | ログイン / バリデーション / リダイレクト |
+| admin/dashboard.spec.ts | 11 | ダッシュボード / CRUD 一覧・作成 / サイドバー |
+
+```bash
+cd e2e && npm install && npx playwright install chromium
+npx playwright test              # 全テスト
+npx playwright test --project=public-site  # 公開サイトのみ
+npx playwright test --project=admin        # 管理画面のみ
+```
+
 ---
 
 ## 🚀 セットアップ
@@ -361,12 +393,11 @@ npm run dev                      # → http://localhost:5173
 
 ## 🔮 今後の拡張案
 
-- **E2E テスト** — Playwright による公開サイト + 管理画面の統合テスト
 - **画像最適化** — Sharp / WebP 変換による配信サイズ削減
 - **全文検索** — Laravel Scout + Meilisearch で求人・お知らせの検索強化
 - **多言語対応** — Next.js i18n + Laravel Lang による日英切替
 - **通知機能** — 新規応募時に Slack / メール通知
-- **本番デプロイ** — Vercel (frontend) + Railway (backend) での公開
+- **管理画面デプロイ** — Vue 3 SPA を Vercel / Netlify で公開
 
 ---
 

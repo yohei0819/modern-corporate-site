@@ -30,5 +30,7 @@ services:
         value: "*.vercel.app"
       - key: FRONTEND_URL
         value: "https://frontend-yohei0819.vercel.app"
+      - key: APP_URL
+        value: "https://recruit-api-sop3.onrender.com"
       - key: ADMIN_URL
         value: "https://frontend-yohei0819.vercel.app"
