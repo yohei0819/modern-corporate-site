@@ -10,6 +10,10 @@ class ApplicationSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Application::count() > 0) {
+            return;
+        }
+
         $publishedJobs = JobPosting::where('status', 'published')->get();
 
         foreach ($publishedJobs as $job) {

@@ -10,11 +10,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    libsqlite3-dev \
+    libpq-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Composer
@@ -32,8 +32,7 @@ COPY . .
 # Create .env for build-time artisan commands
 RUN echo "APP_KEY=base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg=" > .env \
     && echo "APP_ENV=production" >> .env \
-    && echo "DB_CONNECTION=sqlite" >> .env \
-    && echo "DB_DATABASE=/var/www/database/database.sqlite" >> .env
+    && echo "DB_CONNECTION=pgsql" >> .env
 
 # Generate autoloader
 RUN composer dump-autoload --optimize
@@ -42,13 +41,10 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Create SQLite database
-RUN mkdir -p /var/www/database && touch /var/www/database/database.sqlite
-
 # Storage link
 RUN php artisan storage:link 2>/dev/null || true
 
 EXPOSE 8000
 
 # Render injects PORT env var; use it or default to 8000
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD php artisan migrate --force && php artisan db:seed --force 2>/dev/null; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

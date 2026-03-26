@@ -17,9 +17,11 @@ services:
       - key: APP_KEY
         value: "base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg="
       - key: DB_CONNECTION
-        value: sqlite
-      - key: DB_DATABASE
-        value: /var/www/database/database.sqlite
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: recruit-db
+          property: connectionString
       - key: MAIL_MAILER
         value: log
       - key: CACHE_STORE
@@ -34,3 +36,9 @@ services:
         value: "https://recruit-api-sop3.onrender.com"
       - key: ADMIN_URL
         value: "https://yohei0819.github.io"
+
+databases:
+  - name: recruit-db
+    plan: free
+    databaseName: recruit_portfolio
+    user: recruit_user

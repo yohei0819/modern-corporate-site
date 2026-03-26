@@ -9,6 +9,10 @@ class MemberSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Member::count() > 0) {
+            return;
+        }
+
         // 固定データ: 組織構成が見えるメンバー
         $featured = [
             [

@@ -10,6 +10,10 @@ class JobPostingSeeder extends Seeder
 {
     public function run(): void
     {
+        if (JobPosting::count() > 0) {
+            return;
+        }
+
         // 固定データ: 確実にデモで見せたい求人
         $featured = [
             [

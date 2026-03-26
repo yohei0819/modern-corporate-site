@@ -9,6 +9,10 @@ class NewsSeeder extends Seeder
 {
     public function run(): void
     {
+        if (News::count() > 0) {
+            return;
+        }
+
         // 固定データ: カテゴリバランスよく
         $featured = [
             [
