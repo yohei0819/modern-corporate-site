@@ -18,13 +18,11 @@ const navItems = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Close mobile menu on route change (React recommended pattern)
-  if (prevPathname !== pathname) {
-    setPrevPathname(pathname);
-    if (isOpen) setIsOpen(false);
-  }
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {

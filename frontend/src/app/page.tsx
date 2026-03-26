@@ -8,11 +8,17 @@ import FadeIn from '@/components/common/FadeIn';
 
 export const revalidate = 60;
 
+const emptyPage = { data: [] as never[], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } };
+
+function withFallback<T>(label: string, fn: Promise<T>): Promise<T> {
+  return fn.catch((e) => { console.error(`[Home/${label}] API fetch failed:`, e); return emptyPage as T; });
+}
+
 export default async function HomePage() {
   const [jobsRes, membersRes, newsRes] = await Promise.all([
-    getJobs().catch((e) => { console.error('[Home/Jobs] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
-    getMembers().catch((e) => { console.error('[Home/Members] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
-    getNewsList().catch((e) => { console.error('[Home/News] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
+    withFallback('Jobs', getJobs()),
+    withFallback('Members', getMembers()),
+    withFallback('News', getNewsList()),
   ]);
 
   const jobs = jobsRes.data.slice(0, 3);

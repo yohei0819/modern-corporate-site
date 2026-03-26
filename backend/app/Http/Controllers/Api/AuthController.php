@@ -162,7 +162,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user->update(['password' => $validated['password']]);
+        $user->update(['password' => Hash::make($validated['password'])]);
 
         return response()->json([
             'message' => 'パスワードを変更しました。',

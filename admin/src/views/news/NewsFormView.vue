@@ -47,7 +47,7 @@ onMounted(async () => {
     fetching.value = true;
     try {
       const { data } = await api.get<{ data: News }>(`/admin/news/${route.params.id}`);
-      const n = data.data ?? data;
+      const n = data.data;
       form.value = {
         title: n.title,
         slug: n.slug,
@@ -92,9 +92,9 @@ async function handleSubmit() {
   try {
     const fd = new FormData();
     Object.entries(form.value).forEach(([key, value]) => {
+      if (key === 'published_at' && !value) return;
       fd.append(key, value || '');
     });
-    if (!form.value.published_at) fd.delete('published_at');
     if (thumbnailFile.value) fd.append('thumbnail', thumbnailFile.value);
     const config = {
       headers: { 'Content-Type': 'multipart/form-data' },

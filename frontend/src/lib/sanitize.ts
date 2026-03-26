@@ -1,6 +1,7 @@
 import DOMPurify from 'isomorphic-dompurify';
 
-export function sanitizeHtml(dirty: string): string {
+export function sanitizeHtml(dirty: string | null | undefined): string {
+  if (!dirty) return '';
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS: [
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',

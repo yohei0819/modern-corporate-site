@@ -145,14 +145,17 @@ class NewsController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('thumbnail')) {
-            if ($news->thumbnail) {
-                Storage::disk('public')->delete($news->thumbnail);
-            }
-            $data['thumbnail'] = $request->file('thumbnail')
+            $newPath = $request->file('thumbnail')
                 ->store('news', 'public');
+            $oldPath = $news->thumbnail;
+            $data['thumbnail'] = $newPath;
         }
 
         $news->update($data);
+
+        if (isset($oldPath) && $oldPath) {
+            Storage::disk('public')->delete($oldPath);
+        }
 
         ActivityLog::log('update', 'News', $news->id, "お知らせ「{$news->title}」を更新しました");
 

@@ -39,6 +39,10 @@ class JobPosting extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', 'published')
+                     ->where(function ($q) {
+                         $q->whereNull('published_at')
+                           ->orWhere('published_at', '<=', now());
+                     });
     }
 }

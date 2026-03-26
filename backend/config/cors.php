@@ -25,9 +25,9 @@ return [
     ],
 
     'allowed_origins_patterns' => [
-        '#^https://.*\.vercel\.app$#',
-        '#^https://.*\.onrender\.com$#',
-        '#^https://.*\.github\.io$#',
+        '#^https://frontend-yohei0819\.vercel\.app$#',
+        '#^https://recruit-api-sop3\.onrender\.com$#',
+        '#^https://yohei0819\.github\.io$#',
     ],
 
     'allowed_headers' => ['*'],

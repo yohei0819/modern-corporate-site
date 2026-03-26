@@ -133,14 +133,17 @@ class MemberController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('profile_image')) {
-            if ($member->profile_image) {
-                Storage::disk('public')->delete($member->profile_image);
-            }
-            $data['profile_image'] = $request->file('profile_image')
+            $newPath = $request->file('profile_image')
                 ->store('members', 'public');
+            $oldPath = $member->profile_image;
+            $data['profile_image'] = $newPath;
         }
 
         $member->update($data);
+
+        if (isset($oldPath) && $oldPath) {
+            Storage::disk('public')->delete($oldPath);
+        }
 
         ActivityLog::log('update', 'Member', $member->id, "社員「{$member->name}」を更新しました");
 

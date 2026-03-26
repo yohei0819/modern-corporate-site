@@ -30,7 +30,7 @@ onMounted(async () => {
     stats.value = {
       jobs: jobsRes.data.total ?? 0,
       applications: appsRes.data.total ?? 0,
-      newApplications: appsRes.data.data?.filter((a: { status: string }) => a.status === 'new' || a.status === 'unread').length ?? 0,
+      newApplications: appsRes.data.data?.filter((a: { status: string }) => a.status === 'new').length ?? 0,
       inquiries: inquiriesRes.data.total ?? 0,
     };
     applications.value = appsRes.data.data ?? [];

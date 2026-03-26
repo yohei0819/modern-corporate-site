@@ -9,7 +9,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export default function EntryForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [step, setStep] = useState<'input' | 'confirm' | 'sending'>('input');
+  const [step, setStep] = useState<'input' | 'confirm'>('input');
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [jobs, setJobs] = useState<{ id: number; title: string }[]>([]);
   const [form, setForm] = useState<ApplicationFormData>({
@@ -58,7 +59,7 @@ export default function EntryForm() {
   };
 
   const handleSubmit = async () => {
-    setStep('sending');
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('job_posting_id', String(form.job_posting_id));
     formData.append('name', form.name);
@@ -79,12 +80,14 @@ export default function EntryForm() {
         const body = await res.json();
         setErrors(body.errors || {});
         setStep('input');
+        setSubmitting(false);
         return;
       }
       router.push('/entry/thanks');
     } catch {
       setErrors({ submit: ['送信に失敗しました。もう一度お試しください。'] });
       setStep('input');
+      setSubmitting(false);
     }
   };
 
@@ -125,10 +128,10 @@ export default function EntryForm() {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={step === 'sending' as never}
+            disabled={submitting}
             className="rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-50"
           >
-            送信する
+            {submitting ? '送信中…' : '送信する'}
           </button>
         </div>
       </div>
