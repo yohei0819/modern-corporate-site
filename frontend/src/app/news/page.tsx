@@ -5,6 +5,8 @@ import Badge from '@/components/common/Badge';
 import Pagination from '@/components/common/Pagination';
 import { defineMetadata } from '@/lib/metadata';
 
+export const revalidate = 60;
+
 export const metadata = defineMetadata(
   'お知らせ',
   'CORP.の最新のお知らせ、プレスリリース、イベント情報をお届けします。',
@@ -28,10 +30,10 @@ export default async function NewsPage({
   const page = Number(params.page) || 1;
   const category = typeof params.category === 'string' ? params.category : undefined;
 
-  const res = await getNewsList({ page, category }).catch(() => ({
-    data: [],
-    meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 },
-  }));
+  const res = await getNewsList({ page, category }).catch((e) => {
+    console.error('[News] API fetch failed:', e);
+    return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const;
+  });
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">

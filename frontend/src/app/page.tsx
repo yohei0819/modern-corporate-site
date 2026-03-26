@@ -6,11 +6,13 @@ import SectionTitle from '@/components/common/SectionTitle';
 import Badge from '@/components/common/Badge';
 import FadeIn from '@/components/common/FadeIn';
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [jobsRes, membersRes, newsRes] = await Promise.all([
-    getJobs().catch(() => ({ data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } })),
-    getMembers().catch(() => ({ data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } })),
-    getNewsList().catch(() => ({ data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } })),
+    getJobs().catch((e) => { console.error('[Home/Jobs] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
+    getMembers().catch((e) => { console.error('[Home/Members] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
+    getNewsList().catch((e) => { console.error('[Home/News] API fetch failed:', e); return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const; }),
   ]);
 
   const jobs = jobsRes.data.slice(0, 3);

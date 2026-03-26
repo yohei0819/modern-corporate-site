@@ -8,6 +8,8 @@ import JobFilter from '@/components/common/JobFilter';
 import { defineMetadata } from '@/lib/metadata';
 import { employmentTypeLabels } from '@/lib/constants';
 
+export const revalidate = 60;
+
 export const metadata = defineMetadata(
   '募集職種',
   'CORP.の募集職種一覧です。エンジニア、デザイナーなど多様なポジションで採用を行っています。',
@@ -24,10 +26,10 @@ export default async function JobsPage({
   const employment_type = typeof params.employment_type === 'string' ? params.employment_type : undefined;
   const location = typeof params.location === 'string' ? params.location : undefined;
 
-  const res = await getJobs({ page, employment_type, location }).catch(() => ({
-    data: [],
-    meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 },
-  }));
+  const res = await getJobs({ page, employment_type, location }).catch((e) => {
+    console.error('[Jobs] API fetch failed:', e);
+    return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const;
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

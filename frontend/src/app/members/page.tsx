@@ -6,6 +6,8 @@ import Pagination from '@/components/common/Pagination';
 import EmptyState from '@/components/common/EmptyState';
 import { defineMetadata } from '@/lib/metadata';
 
+export const revalidate = 60;
+
 export const metadata = defineMetadata(
   '社員紹介',
   'CORP.で活躍する社員たちを紹介します。',
@@ -20,10 +22,10 @@ export default async function MembersPage({
   const params = await searchParams;
   const page = Number(params.page) || 1;
 
-  const res = await getMembers(page).catch(() => ({
-    data: [],
-    meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 },
-  }));
+  const res = await getMembers(page).catch((e) => {
+    console.error('[Members] API fetch failed:', e);
+    return { data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } } as const;
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

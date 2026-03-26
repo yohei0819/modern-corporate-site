@@ -6,6 +6,8 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
+export const revalidate = 60;
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

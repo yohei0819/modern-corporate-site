@@ -12,6 +12,7 @@ async function fetchApi<T>(
       'Accept': 'application/json',
       ...options?.headers,
     },
+    next: { revalidate: 60 },
     ...options,
   });
 
