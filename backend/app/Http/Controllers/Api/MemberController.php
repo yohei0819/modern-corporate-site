@@ -90,6 +90,26 @@ class MemberController extends Controller
         return response()->json($members);
     }
 
+    /**
+     * 管理側: 社員詳細
+     */
+    #[OA\Get(
+        path: '/admin/members/{member}',
+        summary: '社員詳細（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Members'],
+        parameters: [new OA\Parameter(name: 'member', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: '社員詳細')],
+    )]
+    public function adminShow(Member $member): JsonResponse
+    {
+        if ($member->profile_image) {
+            $member->profile_image = url('storage/' . $member->profile_image);
+        }
+
+        return response()->json(['data' => $member]);
+    }
+
     #[OA\Post(
         path: '/admin/members',
         summary: '社員作成',

@@ -32,11 +32,6 @@ class JobPosting extends Model
         ];
     }
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class);

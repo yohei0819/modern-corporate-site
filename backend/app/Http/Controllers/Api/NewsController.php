@@ -91,6 +91,22 @@ class NewsController extends Controller
         return response()->json($news);
     }
 
+    /**
+     * 管理側: お知らせ詳細
+     */
+    #[OA\Get(
+        path: '/admin/news/{news}',
+        summary: 'お知らせ詳細（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/News'],
+        parameters: [new OA\Parameter(name: 'news', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: 'お知らせ詳細')],
+    )]
+    public function adminShow(News $news): JsonResponse
+    {
+        return response()->json(['data' => $news]);
+    }
+
     #[OA\Post(
         path: '/admin/news',
         summary: 'お知らせ作成',

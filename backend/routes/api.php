@@ -67,12 +67,14 @@ Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
 
     // 社員管理
     Route::get('/admin/members', [MemberController::class, 'adminIndex']);
+    Route::get('/admin/members/{member}', [MemberController::class, 'adminShow']);
     Route::post('/admin/members', [MemberController::class, 'store']);
     Route::put('/admin/members/{member}', [MemberController::class, 'update']);
     Route::delete('/admin/members/{member}', [MemberController::class, 'destroy']);
 
     // お知らせ管理
     Route::get('/admin/news', [NewsController::class, 'adminIndex']);
+    Route::get('/admin/news/{news}', [NewsController::class, 'adminShow']);
     Route::post('/admin/news', [NewsController::class, 'store']);
     Route::put('/admin/news/{news}', [NewsController::class, 'update']);
     Route::delete('/admin/news/{news}', [NewsController::class, 'destroy']);
