@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "curl -s --max-time 120 https://recruit-api-sop3.onrender.com/up > /dev/null && npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm ci",
   "env": {
