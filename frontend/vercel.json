@@ -6,7 +6,6 @@
   "installCommand": "npm ci",
   "env": {
     "API_URL": "https://recruit-api-sop3.onrender.com",
-    "NEXT_PUBLIC_API_URL": "https://recruit-api-sop3.onrender.com",
-    "REVALIDATE_SECRET": "default-secret-change-me"
+    "NEXT_PUBLIC_API_URL": "https://recruit-api-sop3.onrender.com"
   }
 }
