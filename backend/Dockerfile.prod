@@ -32,8 +32,10 @@ COPY . .
 # Create .env for build-time artisan commands
 RUN echo "APP_KEY=base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg=" > .env \
     && echo "APP_ENV=production" >> .env \
-    && echo "APP_DEBUG=true" >> .env \
-    && echo "DB_CONNECTION=pgsql" >> .env
+    && echo "APP_DEBUG=false" >> .env \
+    && echo "DB_CONNECTION=pgsql" >> .env \
+    && echo "SESSION_DRIVER=file" >> .env \
+    && echo "CACHE_STORE=file" >> .env
 
 # Generate autoloader
 RUN composer dump-autoload --optimize
@@ -47,5 +49,6 @@ RUN php artisan storage:link 2>/dev/null || true
 
 EXPOSE 8000
 
-# Render injects PORT env var; use it or default to 8000
-CMD php artisan migrate --force && php artisan db:seed --force 2>/dev/null; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+# Remove build-time .env so Render's environment variables take precedence
+# Then run migrations, seed, and start server
+CMD rm -f /var/www/.env && php artisan migrate --force && php artisan db:seed --force 2>/dev/null; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
