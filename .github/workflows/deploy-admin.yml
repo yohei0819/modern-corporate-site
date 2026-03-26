@@ -40,6 +40,10 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_API_URL: https://recruit-api-sop3.onrender.com
+          VITE_FRONTEND_URL: https://frontend-yohei0819.vercel.app
+          VITE_REVALIDATE_SECRET: ${{ secrets.VITE_REVALIDATE_SECRET }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
