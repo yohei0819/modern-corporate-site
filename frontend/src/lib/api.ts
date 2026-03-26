@@ -1,3 +1,5 @@
+import type { JobPosting, Member, News, InquiryFormData, PaginatedResponse } from '@/types';
+
 const API_URL = process.env.API_URL || 'http://localhost:8000';
 
 async function fetchApi<T>(
@@ -30,26 +32,20 @@ export async function getJobs(params?: {
   if (params?.location) query.set('location', params.location);
   if (params?.page) query.set('page', String(params.page));
   const qs = query.toString();
-  return fetchApi<{
-    data: import('@/types').JobPosting[];
-    meta: { current_page: number; last_page: number; per_page: number; total: number };
-  }>(`/jobs${qs ? `?${qs}` : ''}`);
+  return fetchApi<PaginatedResponse<JobPosting>>(`/jobs${qs ? `?${qs}` : ''}`);
 }
 
 export async function getJob(slug: string) {
-  return fetchApi<{ data: import('@/types').JobPosting }>(`/jobs/${slug}`);
+  return fetchApi<{ data: JobPosting }>(`/jobs/${slug}`);
 }
 
 export async function getMembers(page?: number) {
   const qs = page ? `?page=${page}` : '';
-  return fetchApi<{
-    data: import('@/types').Member[];
-    meta: { current_page: number; last_page: number; per_page: number; total: number };
-  }>(`/members${qs}`);
+  return fetchApi<PaginatedResponse<Member>>(`/members${qs}`);
 }
 
 export async function getMember(slug: string) {
-  return fetchApi<{ data: import('@/types').Member }>(`/members/${slug}`);
+  return fetchApi<{ data: Member }>(`/members/${slug}`);
 }
 
 export async function getNewsList(params?: { category?: string; page?: number }) {
@@ -57,14 +53,11 @@ export async function getNewsList(params?: { category?: string; page?: number })
   if (params?.category) query.set('category', params.category);
   if (params?.page) query.set('page', String(params.page));
   const qs = query.toString();
-  return fetchApi<{
-    data: import('@/types').News[];
-    meta: { current_page: number; last_page: number; per_page: number; total: number };
-  }>(`/news${qs ? `?${qs}` : ''}`);
+  return fetchApi<PaginatedResponse<News>>(`/news${qs ? `?${qs}` : ''}`);
 }
 
 export async function getNewsDetail(slug: string) {
-  return fetchApi<{ data: import('@/types').News }>(`/news/${slug}`);
+  return fetchApi<{ data: News }>(`/news/${slug}`);
 }
 
 export async function submitApplication(formData: FormData) {
@@ -81,7 +74,7 @@ export async function submitApplication(formData: FormData) {
   return res.json();
 }
 
-export async function submitInquiry(data: import('@/types').InquiryFormData) {
+export async function submitInquiry(data: InquiryFormData) {
   const url = `${API_URL}/api/inquiries`;
   const res = await fetch(url, {
     method: 'POST',

@@ -94,7 +94,7 @@ class InquiryController extends Controller
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'status', type: 'string', enum: ['unread', 'replied'], nullable: true),
+                    new OA\Property(property: 'status', type: 'string', enum: ['new', 'in_progress', 'closed'], nullable: true),
                     new OA\Property(property: 'admin_note', type: 'string', nullable: true),
                 ],
             ),

@@ -111,9 +111,9 @@ export default async function HomePage() {
                   className="group block text-center"
                 >
                   <div className="mx-auto h-48 w-48 overflow-hidden rounded-full bg-gray-200">
-                    {member.profile_image && (
+                    {member.profile_image_url && (
                       <Image
-                        src={member.profile_image}
+                        src={member.profile_image_url}
                         alt={member.name}
                         width={192}
                         height={192}

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description,
         url: `https://frontend-yohei0819.vercel.app/members/${slug}`,
-        ...(res.data.profile_image ? { images: [{ url: res.data.profile_image }] } : {}),
+        ...(res.data.profile_image_url ? { images: [{ url: res.data.profile_image_url }] } : {}),
       },
       twitter: { title, description },
     };
@@ -53,9 +53,9 @@ export default async function MemberDetailPage({ params }: Props) {
         {/* Photo */}
         <div className="shrink-0">
           <div className="mx-auto sm:mx-0 h-56 w-56 overflow-hidden rounded-2xl bg-gray-200">
-            {member.profile_image && (
+            {member.profile_image_url && (
               <Image
-                src={member.profile_image}
+                src={member.profile_image_url}
                 alt={member.name}
                 width={224}
                 height={224}

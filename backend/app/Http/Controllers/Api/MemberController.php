@@ -27,13 +27,6 @@ class MemberController extends Controller
             ->orderBy('sort_order')
             ->paginate(12);
 
-        $members->getCollection()->transform(function ($member) {
-            if ($member->profile_image) {
-                $member->profile_image = url('storage/' . $member->profile_image);
-            }
-            return $member;
-        });
-
         return response()->json([
             'data' => $members->items(),
             'meta' => [
@@ -58,10 +51,6 @@ class MemberController extends Controller
     public function show(string $slug): JsonResponse
     {
         $member = Member::published()->where('slug', $slug)->firstOrFail();
-
-        if ($member->profile_image) {
-            $member->profile_image = url('storage/' . $member->profile_image);
-        }
 
         return response()->json(['data' => $member]);
     }
@@ -103,10 +92,6 @@ class MemberController extends Controller
     )]
     public function adminShow(Member $member): JsonResponse
     {
-        if ($member->profile_image) {
-            $member->profile_image = url('storage/' . $member->profile_image);
-        }
-
         return response()->json(['data' => $member]);
     }
 

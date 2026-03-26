@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Member extends Model
 {
@@ -21,11 +22,18 @@ class Member extends Model
         'sort_order',
     ];
 
+    protected $appends = ['profile_image_url'];
+
     protected function casts(): array
     {
         return [
             'sort_order' => 'integer',
         ];
+    }
+
+    public function getProfileImageUrlAttribute(): ?string
+    {
+        return $this->profile_image ? url('storage/' . $this->profile_image) : null;
     }
 
     public function scopePublished($query)

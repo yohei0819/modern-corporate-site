@@ -48,7 +48,7 @@ onMounted(async () => {
     fetching.value = true;
     try {
       const { data } = await api.get<{ data: Member }>(`/admin/members/${route.params.id}`);
-      const m = data.data ?? data;
+      const m = data.data;
       form.value = {
         name: m.name,
         slug: m.slug,
@@ -59,7 +59,7 @@ onMounted(async () => {
         status: m.status,
         sort_order: m.sort_order,
       };
-      if (m.profile_image) imagePreview.value = m.profile_image;
+      if (m.profile_image_url) imagePreview.value = m.profile_image_url;
     } catch {
       toast.error('社員情報の取得に失敗しました');
     } finally {

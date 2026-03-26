@@ -118,7 +118,7 @@ class ApplicationController extends Controller
             content: new OA\JsonContent(
                 required: ['status'],
                 properties: [
-                    new OA\Property(property: 'status', type: 'string', enum: ['unread', 'reviewing', 'interviewing', 'rejected', 'accepted']),
+                    new OA\Property(property: 'status', type: 'string', enum: ['new', 'reviewing', 'interviewed', 'accepted', 'rejected']),
                     new OA\Property(property: 'admin_note', type: 'string', nullable: true),
                 ],
             ),

@@ -42,9 +42,9 @@ export default async function MembersPage({
                 className="group block rounded-xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"
               >
                 <div className="mx-auto h-40 w-40 overflow-hidden rounded-full bg-gray-200">
-                  {member.profile_image && (
+                  {member.profile_image_url && (
                     <Image
-                      src={member.profile_image}
+                      src={member.profile_image_url}
                       alt={member.name}
                       width={160}
                       height={160}

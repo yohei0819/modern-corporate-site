@@ -26,10 +26,10 @@ export function webSiteJsonLd() {
 
 export function jobPostingJsonLd(job: JobPosting) {
   const employmentTypeMap: Record<string, string> = {
-    full_time: 'FULL_TIME',
-    contract: 'CONTRACTOR',
-    part_time: 'PART_TIME',
-    intern: 'INTERN',
+    'full-time': 'FULL_TIME',
+    'contract': 'CONTRACTOR',
+    'part-time': 'PART_TIME',
+    'intern': 'INTERN',
   };
 
   return {

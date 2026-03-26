@@ -24,6 +24,7 @@ export interface Member {
   catch_copy: string;
   message: string;
   profile_image: string | null;
+  profile_image_url: string | null;
   status: 'draft' | 'published';
   sort_order: number;
   created_at: string;
