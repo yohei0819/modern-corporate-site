@@ -13,7 +13,7 @@ export default function EntryForm() {
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [jobs, setJobs] = useState<{ id: number; title: string }[]>([]);
   const [form, setForm] = useState<ApplicationFormData>({
-    job_id: Number(searchParams.get('job')) || 0,
+    job_posting_id: Number(searchParams.get('job')) || 0,
     name: '',
     email: '',
     phone: '',
@@ -27,14 +27,14 @@ export default function EntryForm() {
     fetch(`${API_URL}/api/jobs`)
       .then((res) => res.json())
       .then((data) => setJobs(data.data?.map((j: { id: number; title: string }) => ({ id: j.id, title: j.title })) || []))
-      .catch(() => {});
+      .catch((e) => console.error('[EntryForm] Failed to fetch jobs:', e));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'age' ? (value ? Number(value) : null) : name === 'job_id' ? Number(value) : value,
+      [name]: name === 'age' ? (value ? Number(value) : null) : name === 'job_posting_id' ? Number(value) : value,
     }));
   };
 
@@ -44,7 +44,7 @@ export default function EntryForm() {
 
   const validate = (): boolean => {
     const errs: Record<string, string[]> = {};
-    if (!form.job_id) errs.job_id = ['応募する職種を選択してください'];
+    if (!form.job_posting_id) errs.job_posting_id = ['応募する職種を選択してください'];
     if (!form.name.trim()) errs.name = ['名前を入力してください'];
     if (!form.email.trim()) errs.email = ['メールアドレスを入力してください'];
     if (!form.phone.trim()) errs.phone = ['電話番号を入力してください'];
@@ -60,7 +60,7 @@ export default function EntryForm() {
   const handleSubmit = async () => {
     setStep('sending');
     const formData = new FormData();
-    formData.append('job_id', String(form.job_id));
+    formData.append('job_posting_id', String(form.job_posting_id));
     formData.append('name', form.name);
     formData.append('email', form.email);
     formData.append('phone', form.phone);
@@ -88,7 +88,7 @@ export default function EntryForm() {
     }
   };
 
-  const selectedJob = jobs.find((j) => j.id === form.job_id);
+  const selectedJob = jobs.find((j) => j.id === form.job_posting_id);
 
   if (step === 'confirm') {
     return (
@@ -142,13 +142,13 @@ export default function EntryForm() {
       )}
 
       <div>
-        <label htmlFor="job_id" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="job_posting_id" className="block text-sm font-medium text-gray-700">
           応募する職種 <span className="text-red-500">*</span>
         </label>
         <select
-          id="job_id"
-          name="job_id"
-          value={form.job_id}
+          id="job_posting_id"
+          name="job_posting_id"
+          value={form.job_posting_id}
           onChange={handleChange}
           className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary"
         >
@@ -157,7 +157,7 @@ export default function EntryForm() {
             <option key={j.id} value={j.id}>{j.title}</option>
           ))}
         </select>
-        {errors.job_id && <p className="mt-1 text-xs text-red-500">{errors.job_id[0]}</p>}
+        {errors.job_posting_id && <p className="mt-1 text-xs text-red-500">{errors.job_posting_id[0]}</p>}
       </div>
 
       <div>

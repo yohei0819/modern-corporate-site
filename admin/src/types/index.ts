@@ -44,8 +44,8 @@ export interface News {
   id: number;
   title: string;
   slug: string;
-  category: 'info' | 'press' | 'event';
-  summary: string;
+  category: 'info' | 'press' | 'event' | 'blog';
+  excerpt: string;
   body: string;
   thumbnail: string | null;
   status: 'draft' | 'published';

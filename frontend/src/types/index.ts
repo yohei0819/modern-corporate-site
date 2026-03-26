@@ -56,7 +56,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface ApplicationFormData {
-  job_id: number;
+  job_posting_id: number;
   name: string;
   email: string;
   phone: string;

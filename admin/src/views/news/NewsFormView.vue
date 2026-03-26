@@ -18,7 +18,7 @@ const form = ref({
   title: '',
   slug: '',
   category: 'info',
-  summary: '',
+  excerpt: '',
   body: '',
   status: 'draft',
   published_at: '',
@@ -52,7 +52,7 @@ onMounted(async () => {
         title: n.title,
         slug: n.slug,
         category: n.category,
-        summary: n.summary,
+        excerpt: n.excerpt,
         body: n.body,
         status: n.status,
         published_at: n.published_at?.slice(0, 16) ?? '',
@@ -160,12 +160,13 @@ function fieldError(field: string): string {
             <option value="info">お知らせ</option>
             <option value="press">プレス</option>
             <option value="event">イベント</option>
+            <option value="blog">ブログ</option>
           </select>
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">概要</label>
-          <textarea v-model="form.summary" rows="2" class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" />
-          <p v-if="fieldError('summary')" class="mt-1 text-xs text-red-600">{{ fieldError('summary') }}</p>
+          <textarea v-model="form.excerpt" rows="2" class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" />
+          <p v-if="fieldError('excerpt')" class="mt-1 text-xs text-red-600">{{ fieldError('excerpt') }}</p>
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">本文</label>
