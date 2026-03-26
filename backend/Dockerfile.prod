@@ -32,6 +32,7 @@ COPY . .
 # Create .env for build-time artisan commands
 RUN echo "APP_KEY=base64:Kk6FYjOMKLlSvB2w8ttabWVH6bQUIvS7ZEwJcxlPErg=" > .env \
     && echo "APP_ENV=production" >> .env \
+    && echo "APP_DEBUG=true" >> .env \
     && echo "DB_CONNECTION=pgsql" >> .env
 
 # Generate autoloader
