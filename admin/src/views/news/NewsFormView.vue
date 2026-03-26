@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { isAxiosError } from 'axios';
 import api from '@/services/api';
+import { revalidateFrontend } from '@/services/api';
 import { useToast } from '@/stores/toast';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import type { News, ApiValidationError } from '@/types';
@@ -110,6 +111,7 @@ async function handleSubmit() {
       await api.post('/admin/news', fd, config);
       toast.success('お知らせを作成しました');
     }
+    revalidateFrontend(['/', '/news']);
     markClean();
     router.push({ name: 'news' });
   } catch (e) {

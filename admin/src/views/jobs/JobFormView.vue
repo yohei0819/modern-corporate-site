@@ -3,6 +3,7 @@ import { ref, onMounted, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { isAxiosError } from 'axios';
 import api from '@/services/api';
+import { revalidateFrontend } from '@/services/api';
 import { useToast } from '@/stores/toast';
 import { useUnsavedChanges } from '@/composables/useUnsavedChanges';
 import type { JobPosting, ApiValidationError } from '@/types';
@@ -89,6 +90,7 @@ async function handleSubmit() {
       await api.post('/admin/jobs', payload);
       toast.success('求人を作成しました');
     }
+    revalidateFrontend(['/', '/jobs']);
     markClean();
     router.push({ name: 'jobs' });
   } catch (e) {

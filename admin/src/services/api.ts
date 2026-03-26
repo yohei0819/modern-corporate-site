@@ -30,4 +30,19 @@ api.interceptors.response.use(
   },
 );
 
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:3000';
+const REVALIDATE_SECRET = import.meta.env.VITE_REVALIDATE_SECRET || 'default-secret-change-me';
+
+export async function revalidateFrontend(paths: string[]) {
+  try {
+    await fetch(`${FRONTEND_URL}/api/revalidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: REVALIDATE_SECRET, paths }),
+    });
+  } catch {
+    // Revalidation is best-effort; don't block admin operations
+  }
+}
+
 export default api;

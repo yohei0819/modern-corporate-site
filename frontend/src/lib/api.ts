@@ -1,26 +1,41 @@
 import type { JobPosting, Member, News, PaginatedResponse } from '@/types';
 
 const API_URL = process.env.API_URL || 'http://localhost:8000';
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 3000;
 
 async function fetchApi<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> {
   const url = `${API_URL}/api${endpoint}`;
-  const res = await fetch(url, {
-    headers: {
-      'Accept': 'application/json',
-      ...options?.headers,
-    },
-    next: { revalidate: 60 },
-    ...options,
-  });
+  let lastError: Error | null = null;
 
-  if (!res.ok) {
-    throw new Error(`API Error: ${res.status} ${res.statusText}`);
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          ...options?.headers,
+        },
+        next: { revalidate: 60 },
+        ...options,
+      });
+
+      if (!res.ok) {
+        throw new Error(`API Error: ${res.status} ${res.statusText}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      if (attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+      }
+    }
   }
 
-  return res.json();
+  throw lastError!;
 }
 
 export async function getJobs(params?: {

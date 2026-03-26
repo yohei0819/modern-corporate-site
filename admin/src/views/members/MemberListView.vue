@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api';
+import { revalidateFrontend } from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
 import { useToast } from '@/stores/toast';
@@ -54,6 +55,7 @@ async function deleteMember(id: number) {
   try {
     await api.delete(`/admin/members/${id}`);
     toast.success('社員を削除しました');
+    revalidateFrontend(['/', '/members']);
     await fetchMembers();
   } catch {
     toast.error('削除に失敗しました');
@@ -75,6 +77,7 @@ async function bulkDelete() {
     const failed = results.filter((r) => r.status === 'rejected').length;
     if (succeeded > 0) toast.success(`${succeeded} 件の社員を削除しました`);
     if (failed > 0) toast.error(`${failed} 件の削除に失敗しました`);
+    revalidateFrontend(['/', '/members']);
     await fetchMembers();
   } catch {
     toast.error('一括削除に失敗しました');
