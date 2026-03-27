@@ -1,0 +1,21 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # 5分ごとにAPIにアクセスしてスピンダウンを防止
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # 手動実行も可能
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render API
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 https://recruit-api-sop3.onrender.com/up)
+          echo "Status: $response"
+          if [ "$response" = "000" ]; then
+            echo "⚠️ Request timed out, server may be waking up"
+          else
+            echo "✅ Server responded with $response"
+          fi
