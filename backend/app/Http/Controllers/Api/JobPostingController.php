@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JobPostingRequest;
+use App\Http\Traits\FormatsApiResponse;
 use App\Models\ActivityLog;
 use App\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Admin/Jobs', description: '求人管理')]
 class JobPostingController extends Controller
 {
+    use FormatsApiResponse;
     /**
      * 公開側: 求人一覧（published のみ）
      */
@@ -41,15 +43,7 @@ class JobPostingController extends Controller
 
         $jobs = $query->paginate(12);
 
-        return response()->json([
-            'data' => $jobs->items(),
-            'meta' => [
-                'current_page' => $jobs->currentPage(),
-                'last_page' => $jobs->lastPage(),
-                'per_page' => $jobs->perPage(),
-                'total' => $jobs->total(),
-            ],
-        ]);
+        return $this->paginatedResponse($jobs);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\InquiryStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InquiryRequest;
 use App\Mail\InquiryReceived;
@@ -94,7 +95,7 @@ class InquiryController extends Controller
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'status', type: 'string', enum: ['new', 'in_progress', 'closed'], nullable: true),
+                    new OA\Property(property: 'status', type: 'string', enum: ['unread', 'replied'], nullable: true),
                     new OA\Property(property: 'admin_note', type: 'string', nullable: true),
                 ],
             ),
@@ -104,7 +105,7 @@ class InquiryController extends Controller
     public function adminUpdate(Request $request, Inquiry $inquiry): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'in:new,in_progress,closed'],
+            'status' => ['nullable', InquiryStatus::rule()],
             'admin_note' => ['nullable', 'string'],
         ]);
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { ApplicationFormData } from '@/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { PUBLIC_API_URL } from '@/lib/constants';
 
 export default function EntryForm() {
   const router = useRouter();
@@ -25,22 +25,46 @@ export default function EntryForm() {
   });
 
   useEffect(() => {
-    fetch(`${API_URL}/api/jobs`)
+    fetch(`${PUBLIC_API_URL}/api/jobs`)
       .then((res) => res.json())
-      .then((data) => setJobs(data.data?.map((j: { id: number; title: string }) => ({ id: j.id, title: j.title })) || []))
+      .then((data) =>
+        setJobs(
+          data.data?.map((j: { id: number; title: string }) => ({ id: j.id, title: j.title })) ||
+            [],
+        ),
+      )
       .catch((e) => console.error('[EntryForm] Failed to fetch jobs:', e));
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'age' ? (value ? Number(value) : null) : name === 'job_posting_id' ? Number(value) : value,
+      [name]:
+        name === 'age'
+          ? value
+            ? Number(value)
+            : null
+          : name === 'job_posting_id'
+            ? Number(value)
+            : value,
     }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, resume: e.target.files?.[0] || null }));
+    const file = e.target.files?.[0] || null;
+    if (file && file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, resume: ['ファイルサイズは5MB以下にしてください'] }));
+      e.target.value = '';
+      return;
+    }
+    setErrors((prev) => {
+      const { resume, ...rest } = prev;
+      return rest;
+    });
+    setForm((prev) => ({ ...prev, resume: file }));
   };
 
   const validate = (): boolean => {
@@ -71,9 +95,9 @@ export default function EntryForm() {
     if (form.portfolio_url) formData.append('portfolio_url', form.portfolio_url);
 
     try {
-      const res = await fetch(`${API_URL}/api/applications`, {
+      const res = await fetch(`${PUBLIC_API_URL}/api/applications`, {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
+        headers: { Accept: 'application/json' },
         body: formData,
       });
       if (!res.ok) {
@@ -97,7 +121,9 @@ export default function EntryForm() {
     return (
       <div className="space-y-6">
         <h2 className="text-xl font-bold text-gray-900">入力内容の確認</h2>
-        <p className="text-sm text-gray-500">以下の内容でよろしければ「送信する」を押してください。</p>
+        <p className="text-sm text-gray-500">
+          以下の内容でよろしければ「送信する」を押してください。
+        </p>
 
         <dl className="divide-y divide-gray-100">
           {[
@@ -157,10 +183,14 @@ export default function EntryForm() {
         >
           <option value={0}>選択してください</option>
           {jobs.map((j) => (
-            <option key={j.id} value={j.id}>{j.title}</option>
+            <option key={j.id} value={j.id}>
+              {j.title}
+            </option>
           ))}
         </select>
-        {errors.job_posting_id && <p className="mt-1 text-xs text-red-500">{errors.job_posting_id[0]}</p>}
+        {errors.job_posting_id && (
+          <p className="mt-1 text-xs text-red-500">{errors.job_posting_id[0]}</p>
+        )}
       </div>
 
       <div>
@@ -209,7 +239,9 @@ export default function EntryForm() {
       </div>
 
       <div>
-        <label htmlFor="age" className="block text-sm font-medium text-gray-700">年齢</label>
+        <label htmlFor="age" className="block text-sm font-medium text-gray-700">
+          年齢
+        </label>
         <input
           id="age"
           name="age"

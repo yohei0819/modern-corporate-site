@@ -11,7 +11,7 @@ export interface JobPosting {
   id: number;
   title: string;
   slug: string;
-  employment_type: 'full-time' | 'contract' | 'part-time';
+  employment_type: 'full-time' | 'contract' | 'part-time' | 'internship' | 'internship';
   location: string;
   salary_text: string;
   summary: string;
@@ -48,6 +48,7 @@ export interface News {
   excerpt: string;
   body: string;
   thumbnail: string | null;
+  thumbnail_url: string | null;
   status: 'draft' | 'published';
   published_at: string | null;
   created_at: string;
@@ -61,10 +62,12 @@ export interface Application {
   name: string;
   email: string;
   phone: string;
+  age: number | null;
   resume_path: string | null;
+  portfolio_url: string | null;
   message: string | null;
-  status: 'new' | 'reviewing' | 'interviewed' | 'accepted' | 'rejected';
-  admin_memo: string | null;
+  status: 'unread' | 'reviewing' | 'interviewing' | 'accepted' | 'rejected';
+  admin_note: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -73,19 +76,18 @@ export interface Inquiry {
   id: number;
   name: string;
   email: string;
-  phone: string | null;
-  category: string;
-  body: string;
-  status: 'new' | 'in_progress' | 'closed';
-  admin_memo: string | null;
+  company: string | null;
+  message: string;
+  status: 'unread' | 'replied';
+  admin_note: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface Media {
   id: number;
-  filename: string;
-  path: string;
+  file_name: string;
+  file_path: string;
   mime_type: string;
   size: number;
   url: string;

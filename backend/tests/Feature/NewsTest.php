@@ -110,7 +110,7 @@ class NewsTest extends TestCase
         $news = News::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->putJson("/api/admin/news/{$news->slug}", [
+            ->putJson("/api/admin/news/{$news->id}", [
                 'title' => '更新後のタイトル',
                 'slug' => $news->slug,
                 'category' => 'event',
@@ -129,7 +129,7 @@ class NewsTest extends TestCase
         $news = News::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->deleteJson("/api/admin/news/{$news->slug}");
+            ->deleteJson("/api/admin/news/{$news->id}");
 
         $response->assertNoContent();
         $this->assertDatabaseMissing('news', ['id' => $news->id]);

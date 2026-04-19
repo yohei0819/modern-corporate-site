@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class News extends Model
 {
@@ -20,6 +22,8 @@ class News extends Model
         'published_at',
     ];
 
+    protected $appends = ['thumbnail_url'];
+
     protected function casts(): array
     {
         return [
@@ -27,9 +31,17 @@ class News extends Model
         ];
     }
 
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail) {
+            return null;
+        }
+        return Storage::disk('public')->url($this->thumbnail);
+    }
+
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
+        return $query->where('status', ContentStatus::Published)
                      ->where('published_at', '<=', now());
     }
 }

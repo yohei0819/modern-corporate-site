@@ -37,7 +37,7 @@ async function uploadFiles(files: FileList | File[]) {
       await api.post('/admin/media', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (e) => {
-          const fileProgress = e.total ? (e.loaded / e.total) : 0;
+          const fileProgress = e.total ? e.loaded / e.total : 0;
           uploadProgress.value = Math.round(((completed + fileProgress) / totalFiles) * 100);
         },
       });
@@ -109,7 +109,9 @@ onMounted(fetchMedia);
       @drop.prevent="handleDrop"
     >
       <p class="text-gray-500 mb-2">ファイルをドラッグ＆ドロップ、または</p>
-      <label class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 cursor-pointer transition-colors">
+      <label
+        class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 cursor-pointer transition-colors"
+      >
         ファイルを選択
         <input type="file" multiple class="hidden" @change="handleFileInput" />
       </label>
@@ -120,7 +122,10 @@ onMounted(fetchMedia);
           <span>{{ uploadProgress }}%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 h-2 rounded-full upload-progress-bar" :style="{ width: `${uploadProgress}%` }" />
+          <div
+            class="bg-blue-600 h-2 rounded-full upload-progress-bar"
+            :style="{ width: `${uploadProgress}%` }"
+          />
         </div>
       </div>
     </div>
@@ -132,7 +137,9 @@ onMounted(fetchMedia);
         <div class="p-2"><div class="skeleton h-3 w-3/4" /></div>
       </div>
     </div>
-    <div v-else-if="mediaList.length === 0" class="text-center text-gray-500 py-8">メディアがありません。</div>
+    <div v-else-if="mediaList.length === 0" class="text-center text-gray-500 py-8">
+      メディアがありません。
+    </div>
     <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
       <div
         v-for="media in mediaList"
@@ -142,16 +149,18 @@ onMounted(fetchMedia);
         <img
           v-if="media.mime_type.startsWith('image/')"
           :src="media.url"
-          :alt="media.filename"
+          :alt="media.file_name"
           class="w-full h-32 object-cover"
         />
         <div v-else class="w-full h-32 flex items-center justify-center bg-gray-100">
           <span class="text-xs text-gray-400">{{ media.mime_type }}</span>
         </div>
         <div class="p-2">
-          <p class="text-xs text-gray-700 truncate">{{ media.filename }}</p>
+          <p class="text-xs text-gray-700 truncate">{{ media.file_name }}</p>
         </div>
-        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+        <div
+          class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
+        >
           <button
             class="rounded bg-white px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100"
             @click="copyUrl(media.url)"

@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import { useToast } from '@/stores/toast';
+import { INQUIRY_STATUS_MAP } from '@/constants/status';
 import type { Inquiry } from '@/types';
 
 const router = useRouter();
@@ -13,11 +14,11 @@ const inquiry = ref<Inquiry | null>(null);
 const loading = ref(true);
 const updating = ref(false);
 
-const statuses = [
-  { value: 'new', label: '新規', color: 'blue' as const },
-  { value: 'in_progress', label: '対応中', color: 'amber' as const },
-  { value: 'closed', label: '完了', color: 'green' as const },
-];
+const statuses = Object.entries(INQUIRY_STATUS_MAP).map(([value, { label, color }]) => ({
+  value,
+  label,
+  color,
+}));
 
 onMounted(async () => {
   try {
@@ -50,7 +51,12 @@ async function updateStatus(status: string) {
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-900">問い合わせ詳細</h1>
-      <button class="text-sm text-gray-500 hover:text-gray-700" @click="router.push({ name: 'inquiries' })">← 一覧に戻る</button>
+      <button
+        class="text-sm text-gray-500 hover:text-gray-700"
+        @click="router.push({ name: 'inquiries' })"
+      >
+        ← 一覧に戻る
+      </button>
     </div>
 
     <div v-if="loading" class="text-gray-500">読み込み中...</div>
@@ -67,16 +73,12 @@ async function updateStatus(status: string) {
             <p class="text-gray-900">{{ inquiry.email }}</p>
           </div>
           <div>
-            <p class="text-xs text-gray-500 mb-1">電話番号</p>
-            <p class="text-gray-900">{{ inquiry.phone ?? 'なし' }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">カテゴリ</p>
-            <p class="text-gray-900">{{ inquiry.category }}</p>
+            <p class="text-xs text-gray-500 mb-1">会社名</p>
+            <p class="text-gray-900">{{ inquiry.company ?? 'なし' }}</p>
           </div>
           <div class="sm:col-span-2">
             <p class="text-xs text-gray-500 mb-1">内容</p>
-            <p class="text-gray-900 whitespace-pre-wrap">{{ inquiry.body }}</p>
+            <p class="text-gray-900 whitespace-pre-wrap">{{ inquiry.message }}</p>
           </div>
           <div>
             <p class="text-xs text-gray-500 mb-1">受付日</p>
@@ -85,8 +87,8 @@ async function updateStatus(status: string) {
           <div>
             <p class="text-xs text-gray-500 mb-1">現在のステータス</p>
             <AppBadge
-              :label="statuses.find(s => s.value === inquiry!.status)?.label ?? inquiry!.status"
-              :color="statuses.find(s => s.value === inquiry!.status)?.color ?? 'gray'"
+              :label="statuses.find((s) => s.value === inquiry!.status)?.label ?? inquiry!.status"
+              :color="statuses.find((s) => s.value === inquiry!.status)?.color ?? 'gray'"
             />
           </div>
         </div>

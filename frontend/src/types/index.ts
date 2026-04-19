@@ -39,6 +39,7 @@ export interface News {
   excerpt: string;
   body: string;
   thumbnail: string | null;
+  thumbnail_url: string | null;
   status: 'draft' | 'published';
   published_at: string | null;
   created_at: string;

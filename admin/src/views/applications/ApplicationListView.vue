@@ -5,6 +5,7 @@ import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
 import { useToast } from '@/stores/toast';
+import { APPLICATION_STATUS_MAP, APPLICATION_STATUS_OPTIONS } from '@/constants/status';
 import type { Application, PaginatedResponse } from '@/types';
 
 const router = useRouter();
@@ -16,21 +17,6 @@ const total = ref(0);
 const loading = ref(true);
 const selectedIds = ref<Set<number>>(new Set());
 const batchStatus = ref('');
-
-const statusMap: Record<string, { label: string; color: 'blue' | 'amber' | 'purple' | 'green' | 'red' }> = {
-  new: { label: '新規', color: 'blue' },
-  reviewing: { label: '選考中', color: 'amber' },
-  interviewed: { label: '面接済', color: 'purple' },
-  accepted: { label: '採用', color: 'green' },
-  rejected: { label: '不採用', color: 'red' },
-};
-
-const statusOptions = [
-  { value: 'reviewing', label: '選考中' },
-  { value: 'interviewed', label: '面接済' },
-  { value: 'accepted', label: '採用' },
-  { value: 'rejected', label: '不採用' },
-];
 
 async function fetchApplications() {
   loading.value = true;
@@ -107,7 +93,7 @@ onMounted(fetchApplications);
             class="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700"
           >
             <option value="" disabled>ステータス変更</option>
-            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
+            <option v-for="opt in APPLICATION_STATUS_OPTIONS" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
@@ -130,7 +116,9 @@ onMounted(fetchApplications);
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div v-if="loading" class="p-8 text-center text-gray-500">読み込み中...</div>
-      <div v-else-if="applications.length === 0" class="p-8 text-center text-gray-500">応募がありません。</div>
+      <div v-else-if="applications.length === 0" class="p-8 text-center text-gray-500">
+        応募がありません。
+      </div>
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -144,7 +132,9 @@ onMounted(fetchApplications);
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">氏名</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">求人</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ステータス</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              ステータス
+            </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">応募日</th>
             <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
           </tr>
@@ -162,9 +152,13 @@ onMounted(fetchApplications);
             <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ app.name }}</td>
             <td class="px-4 py-3 text-sm text-gray-600">{{ app.job_posting?.title ?? '-' }}</td>
             <td class="px-4 py-3">
-              <AppBadge v-bind="statusMap[app.status] ?? { label: app.status, color: 'gray' }" />
+              <AppBadge
+                v-bind="APPLICATION_STATUS_MAP[app.status] ?? { label: app.status, color: 'gray' }"
+              />
             </td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ new Date(app.created_at).toLocaleDateString('ja-JP') }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">
+              {{ new Date(app.created_at).toLocaleDateString('ja-JP') }}
+            </td>
             <td class="px-4 py-3 text-right">
               <button
                 class="text-sm text-blue-600 hover:text-blue-800"

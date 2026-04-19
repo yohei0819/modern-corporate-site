@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getMember } from '@/lib/api';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { SITE_URL } from '@/lib/constants';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         title,
         description,
-        url: `https://frontend-yohei0819.vercel.app/members/${slug}`,
+        url: `${SITE_URL}/members/${slug}`,
         ...(res.data.profile_image_url ? { images: [{ url: res.data.profile_image_url }] } : {}),
       },
       twitter: { title, description },
@@ -44,12 +45,7 @@ export default async function MemberDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-      <Breadcrumb
-        items={[
-          { label: '社員紹介', href: '/members' },
-          { label: member.name },
-        ]}
-      />
+      <Breadcrumb items={[{ label: '社員紹介', href: '/members' }, { label: member.name }]} />
 
       <div className="mt-6 sm:flex sm:gap-10">
         {/* Photo */}
@@ -71,7 +67,9 @@ export default async function MemberDetailPage({ params }: Props) {
 
         {/* Info */}
         <div className="mt-6 sm:mt-0">
-          <p className="text-sm text-gray-500">{member.department} / {member.position}</p>
+          <p className="text-sm text-gray-500">
+            {member.department} / {member.position}
+          </p>
           <h1 className="mt-1 text-3xl font-bold text-gray-900">{member.name}</h1>
           <p className="mt-3 text-lg text-primary font-medium">{member.catch_copy}</p>
         </div>

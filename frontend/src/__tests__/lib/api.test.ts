@@ -7,7 +7,8 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Import after mocking
-const { getJobs, getJob, getMembers, getMember, getNewsList, getNewsDetail } = await import('@/lib/api');
+const { getJobs, getJob, getMembers, getMember, getNewsList, getNewsDetail } =
+  await import('@/lib/api');
 
 beforeEach(() => {
   mockFetch.mockReset();
@@ -75,15 +76,12 @@ describe('API Client', () => {
     mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({}) });
 
     await getNewsDetail('news-slug');
-    expect(mockFetch).toHaveBeenCalledWith(
-      `${API_URL}/api/news/news-slug`,
-      expect.any(Object),
-    );
+    expect(mockFetch).toHaveBeenCalledWith(`${API_URL}/api/news/news-slug`, expect.any(Object));
   });
 
   it('throws on non-ok response', async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 404, statusText: 'Not Found' });
+    mockFetch.mockResolvedValue({ ok: false, status: 404, statusText: 'Not Found' });
 
     await expect(getJob('nonexistent')).rejects.toThrow('API Error: 404 Not Found');
-  });
+  }, 30000);
 });

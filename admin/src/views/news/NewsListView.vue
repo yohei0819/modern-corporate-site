@@ -7,6 +7,7 @@ import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
 import { useToast } from '@/stores/toast';
 import { useConfirm } from '@/composables/useConfirm';
+import { NEWS_CATEGORY_MAP } from '@/constants/status';
 import type { News, PaginatedResponse } from '@/types';
 
 const router = useRouter();
@@ -18,12 +19,6 @@ const lastPage = ref(1);
 const total = ref(0);
 const loading = ref(true);
 const selectedIds = ref<Set<number>>(new Set());
-
-const categoryMap: Record<string, { label: string; color: 'blue' | 'purple' | 'amber' }> = {
-  info: { label: 'お知らせ', color: 'blue' },
-  press: { label: 'プレス', color: 'purple' },
-  event: { label: 'イベント', color: 'amber' },
-};
 
 async function fetchNews() {
   loading.value = true;
@@ -78,7 +73,9 @@ async function bulkDelete() {
   });
   if (!ok) return;
   try {
-    const results = await Promise.allSettled([...selectedIds.value].map((id) => api.delete(`/admin/news/${id}`)));
+    const results = await Promise.allSettled(
+      [...selectedIds.value].map((id) => api.delete(`/admin/news/${id}`)),
+    );
     const succeeded = results.filter((r) => r.status === 'fulfilled').length;
     const failed = results.filter((r) => r.status === 'rejected').length;
     if (succeeded > 0) toast.success(`${succeeded} 件のお知らせを削除しました`);
@@ -126,29 +123,57 @@ onMounted(fetchNews);
           <div class="skeleton h-4 w-16" />
         </div>
       </div>
-      <div v-else-if="newsList.length === 0" class="p-8 text-center text-gray-500">お知らせがありません。</div>
+      <div v-else-if="newsList.length === 0" class="p-8 text-center text-gray-500">
+        お知らせがありません。
+      </div>
       <div v-else class="table-responsive">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-3 text-left">
-                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" :checked="selectedIds.size === newsList.length && newsList.length > 0" @change="toggleSelectAll" />
+                <input
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  :checked="selectedIds.size === newsList.length && newsList.length > 0"
+                  @change="toggleSelectAll"
+                />
               </th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">タイトル</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">カテゴリ</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ステータス</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">公開日</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                タイトル
+              </th>
+              <th
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell"
+              >
+                カテゴリ
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                ステータス
+              </th>
+              <th
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell"
+              >
+                公開日
+              </th>
               <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr v-for="news in newsList" :key="news.id" class="hover:bg-gray-50">
               <td class="px-4 py-3">
-                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" :checked="selectedIds.has(news.id)" @change="toggleSelect(news.id)" />
+                <input
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  :checked="selectedIds.has(news.id)"
+                  @change="toggleSelect(news.id)"
+                />
               </td>
               <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ news.title }}</td>
               <td class="px-4 py-3 hidden sm:table-cell">
-                <AppBadge v-bind="categoryMap[news.category] ?? { label: news.category, color: 'gray' }" />
+                <AppBadge
+                  v-bind="
+                    NEWS_CATEGORY_MAP[news.category] ?? { label: news.category, color: 'gray' }
+                  "
+                />
               </td>
               <td class="px-4 py-3">
                 <AppBadge
@@ -156,10 +181,24 @@ onMounted(fetchNews);
                   :color="news.status === 'published' ? 'green' : 'gray'"
                 />
               </td>
-              <td class="px-4 py-3 text-sm text-gray-500 hidden md:table-cell">{{ news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : '-' }}</td>
+              <td class="px-4 py-3 text-sm text-gray-500 hidden md:table-cell">
+                {{
+                  news.published_at ? new Date(news.published_at).toLocaleDateString('ja-JP') : '-'
+                }}
+              </td>
               <td class="px-4 py-3 text-right space-x-2">
-                <button class="text-sm text-blue-600 hover:text-blue-800" @click="router.push({ name: 'news-edit', params: { id: news.id } })">編集</button>
-                <button class="text-sm text-red-600 hover:text-red-800" @click="deleteNews(news.id)">削除</button>
+                <button
+                  class="text-sm text-blue-600 hover:text-blue-800"
+                  @click="router.push({ name: 'news-edit', params: { id: news.id } })"
+                >
+                  編集
+                </button>
+                <button
+                  class="text-sm text-red-600 hover:text-red-800"
+                  @click="deleteNews(news.id)"
+                >
+                  削除
+                </button>
               </td>
             </tr>
           </tbody>

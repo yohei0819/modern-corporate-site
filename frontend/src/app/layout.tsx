@@ -17,8 +17,11 @@ export const metadata: Metadata = {
     default: 'CORP. - 採用サイト',
     template: '%s | CORP.',
   },
-  description: 'テクノロジーで未来を創る。CORP.の採用情報サイトです。募集職種、社員紹介、働く環境など採用に関する情報をお届けします。',
-  metadataBase: new URL('https://frontend-yohei0819.vercel.app'),
+  description:
+    'テクノロジーで未来を創る。CORP.の採用情報サイトです。募集職種、社員紹介、働く環境など採用に関する情報をお届けします。',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://frontend-yohei0819.vercel.app',
+  ),
   robots: {
     index: true,
     follow: true,
@@ -29,7 +32,7 @@ export const metadata: Metadata = {
     siteName: 'CORP. 採用サイト',
     title: 'CORP. - 採用サイト',
     description: 'テクノロジーで未来を創る。CORP.の採用情報・募集職種・社員紹介をお届けします。',
-    url: 'https://frontend-yohei0819.vercel.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://frontend-yohei0819.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
@@ -69,7 +72,9 @@ export default function RootLayout({
             メインコンテンツへスキップ
           </a>
           <Header />
-          <main id="main-content" className="flex-1 page-transition">{children}</main>
+          <main id="main-content" className="flex-1 page-transition">
+            {children}
+          </main>
           <Footer />
           <ServiceWorkerRegister />
         </ThemeProvider>

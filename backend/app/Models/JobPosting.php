@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,7 +40,7 @@ class JobPosting extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
+        return $query->where('status', ContentStatus::Published)
                      ->where(function ($q) {
                          $q->whereNull('published_at')
                            ->orWhere('published_at', '<=', now());

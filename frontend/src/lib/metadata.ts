@@ -1,19 +1,14 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/constants';
 
-const BASE_URL = 'https://frontend-yohei0819.vercel.app';
-
-export function defineMetadata(
-  title: string,
-  description: string,
-  path: string,
-): Metadata {
+export function defineMetadata(title: string, description: string, path: string): Metadata {
   return {
     title,
     description,
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}${path}`,
+      url: `${SITE_URL}${path}`,
     },
     twitter: {
       title,

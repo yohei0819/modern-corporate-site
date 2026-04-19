@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import api from '@/services/api';
+import { APPLICATION_STATUS_MAP } from '@/constants/status';
 import type { Application } from '@/types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
@@ -30,7 +31,8 @@ onMounted(async () => {
     stats.value = {
       jobs: jobsRes.data.total ?? 0,
       applications: appsRes.data.total ?? 0,
-      newApplications: appsRes.data.data?.filter((a: { status: string }) => a.status === 'new').length ?? 0,
+      newApplications:
+        appsRes.data.data?.filter((a: { status: string }) => a.status === 'unread').length ?? 0,
       inquiries: inquiriesRes.data.total ?? 0,
     };
     applications.value = appsRes.data.data ?? [];
@@ -43,9 +45,27 @@ onMounted(async () => {
 
 const cards = [
   { label: '公開中求人', key: 'jobs' as const, color: 'bg-blue-500', icon: '💼', to: '/jobs' },
-  { label: '応募件数', key: 'applications' as const, color: 'bg-green-500', icon: '📥', to: '/applications' },
-  { label: '未対応応募', key: 'newApplications' as const, color: 'bg-amber-500', icon: '🔔', to: '/applications' },
-  { label: '問い合わせ', key: 'inquiries' as const, color: 'bg-purple-500', icon: '✉️', to: '/inquiries' },
+  {
+    label: '応募件数',
+    key: 'applications' as const,
+    color: 'bg-green-500',
+    icon: '📥',
+    to: '/applications',
+  },
+  {
+    label: '未対応応募',
+    key: 'newApplications' as const,
+    color: 'bg-amber-500',
+    icon: '🔔',
+    to: '/applications',
+  },
+  {
+    label: '問い合わせ',
+    key: 'inquiries' as const,
+    color: 'bg-purple-500',
+    icon: '✉️',
+    to: '/inquiries',
+  },
 ];
 
 // Monthly application trend (last 6 months)
@@ -81,19 +101,11 @@ const monthlyChartData = computed(() => {
 
 // Application status distribution
 const statusChartData = computed(() => {
-  const statusMap: Record<string, { label: string; color: string }> = {
-    new: { label: '新規', color: '#3b82f6' },
-    reviewing: { label: '選考中', color: '#f59e0b' },
-    interviewed: { label: '面接済', color: '#8b5cf6' },
-    accepted: { label: '採用', color: '#10b981' },
-    rejected: { label: '不採用', color: '#ef4444' },
-  };
-
-  const entries = Object.entries(statusMap);
+  const entries = Object.entries(APPLICATION_STATUS_MAP);
   const labels = entries.map(([, v]) => v.label);
-  const colors = entries.map(([, v]) => v.color);
-  const data = entries.map(([key]) =>
-    applications.value.filter((app) => app.status === key).length,
+  const colors = entries.map(([, v]) => v.hex);
+  const data = entries.map(
+    ([key]) => applications.value.filter((app) => app.status === key).length,
   );
 
   return {
@@ -131,7 +143,10 @@ const doughnutOptions = {
     <h1 class="text-2xl font-bold text-gray-900 mb-6">ダッシュボード</h1>
 
     <!-- Error -->
-    <div v-if="error" class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+    <div
+      v-if="error"
+      class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700"
+    >
       {{ error }}
     </div>
 
@@ -168,7 +183,10 @@ const doughnutOptions = {
     </div>
 
     <!-- Charts -->
-    <div v-if="!loading && applications.length > 0" class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div
+      v-if="!loading && applications.length > 0"
+      class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2"
+    >
       <!-- Monthly Trend -->
       <div class="rounded-xl bg-white border border-gray-200 p-6 shadow-sm">
         <h2 class="text-sm font-semibold text-gray-700 mb-4">月別応募推移</h2>

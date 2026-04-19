@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NewsRequest;
+use App\Http\Traits\FormatsApiResponse;
+use App\Http\Traits\HandlesFileUpload;
 use App\Models\ActivityLog;
 use App\Models\News;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'News', description: 'お知らせ')]
 #[OA\Tag(name: 'Admin/News', description: 'お知らせ管理')]
 class NewsController extends Controller
 {
+    use FormatsApiResponse, HandlesFileUpload;
     #[OA\Get(
         path: '/news',
         summary: 'お知らせ一覧（公開）',
@@ -35,15 +37,7 @@ class NewsController extends Controller
 
         $news = $query->paginate(12);
 
-        return response()->json([
-            'data' => $news->items(),
-            'meta' => [
-                'current_page' => $news->currentPage(),
-                'last_page' => $news->lastPage(),
-                'per_page' => $news->perPage(),
-                'total' => $news->total(),
-            ],
-        ]);
+        return $this->paginatedResponse($news);
     }
 
     #[OA\Get(
@@ -118,11 +112,7 @@ class NewsController extends Controller
     public function store(NewsRequest $request): JsonResponse
     {
         $data = $request->validated();
-
-        if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')
-                ->store('news', 'public');
-        }
+        $this->storeUploadedFile($request, $data, 'thumbnail', 'news');
 
         $news = News::create($data);
 
@@ -143,19 +133,9 @@ class NewsController extends Controller
     public function update(NewsRequest $request, News $news): JsonResponse
     {
         $data = $request->validated();
-
-        if ($request->hasFile('thumbnail')) {
-            $newPath = $request->file('thumbnail')
-                ->store('news', 'public');
-            $oldPath = $news->thumbnail;
-            $data['thumbnail'] = $newPath;
-        }
+        $this->updateUploadedFile($request, $news, $data, 'thumbnail', 'news');
 
         $news->update($data);
-
-        if (isset($oldPath) && $oldPath) {
-            Storage::disk('public')->delete($oldPath);
-        }
 
         ActivityLog::log('update', 'News', $news->id, "お知らせ「{$news->title}」を更新しました");
 
@@ -174,10 +154,7 @@ class NewsController extends Controller
     {
         ActivityLog::log('delete', 'News', $news->id, "お知らせ「{$news->title}」を削除しました");
 
-        if ($news->thumbnail) {
-            Storage::disk('public')->delete($news->thumbnail);
-        }
-
+        $this->deleteModelFile($news, 'thumbnail');
         $news->delete();
 
         return response()->json(null, 204);

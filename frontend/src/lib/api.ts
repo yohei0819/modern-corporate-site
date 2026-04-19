@@ -4,10 +4,7 @@ const API_URL = process.env.API_URL || 'http://localhost:8000';
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 3000;
 
-async function fetchApi<T>(
-  endpoint: string,
-  options?: RequestInit,
-): Promise<T> {
+async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_URL}/api${endpoint}`;
   let lastError: Error | null = null;
 
@@ -15,7 +12,7 @@ async function fetchApi<T>(
     try {
       const res = await fetch(url, {
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           ...options?.headers,
         },
         next: { revalidate: 60 },
@@ -52,7 +49,7 @@ export async function getJobs(params?: {
 }
 
 export async function getJob(slug: string) {
-  return fetchApi<{ data: JobPosting }>(`/jobs/${slug}`);
+  return fetchApi<{ data: JobPosting }>(`/jobs/${encodeURIComponent(slug)}`);
 }
 
 export async function getMembers(page?: number) {
@@ -61,7 +58,7 @@ export async function getMembers(page?: number) {
 }
 
 export async function getMember(slug: string) {
-  return fetchApi<{ data: Member }>(`/members/${slug}`);
+  return fetchApi<{ data: Member }>(`/members/${encodeURIComponent(slug)}`);
 }
 
 export async function getNewsList(params?: { category?: string; page?: number }) {
@@ -73,7 +70,5 @@ export async function getNewsList(params?: { category?: string; page?: number })
 }
 
 export async function getNewsDetail(slug: string) {
-  return fetchApi<{ data: News }>(`/news/${slug}`);
+  return fetchApi<{ data: News }>(`/news/${encodeURIComponent(slug)}`);
 }
-
-

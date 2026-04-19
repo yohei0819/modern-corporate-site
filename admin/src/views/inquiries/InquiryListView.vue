@@ -5,6 +5,7 @@ import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import AppPagination from '@/components/ui/AppPagination.vue';
 import { useToast } from '@/stores/toast';
+import { INQUIRY_STATUS_MAP, INQUIRY_STATUS_OPTIONS } from '@/constants/status';
 import type { Inquiry, PaginatedResponse } from '@/types';
 
 const router = useRouter();
@@ -16,17 +17,6 @@ const total = ref(0);
 const loading = ref(true);
 const selectedIds = ref<Set<number>>(new Set());
 const batchStatus = ref('');
-
-const statusMap: Record<string, { label: string; color: 'blue' | 'amber' | 'green' }> = {
-  new: { label: '新規', color: 'blue' },
-  in_progress: { label: '対応中', color: 'amber' },
-  closed: { label: '完了', color: 'green' },
-};
-
-const statusOptions = [
-  { value: 'in_progress', label: '対応中' },
-  { value: 'closed', label: '完了' },
-];
 
 async function fetchInquiries() {
   loading.value = true;
@@ -87,7 +77,7 @@ onMounted(fetchInquiries);
           class="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700"
         >
           <option value="" disabled>ステータス変更</option>
-          <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
+          <option v-for="opt in INQUIRY_STATUS_OPTIONS" :key="opt.value" :value="opt.value">
             {{ opt.label }}
           </option>
         </select>
@@ -103,7 +93,9 @@ onMounted(fetchInquiries);
 
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div v-if="loading" class="p-8 text-center text-gray-500">読み込み中...</div>
-      <div v-else-if="inquiries.length === 0" class="p-8 text-center text-gray-500">問い合わせがありません。</div>
+      <div v-else-if="inquiries.length === 0" class="p-8 text-center text-gray-500">
+        問い合わせがありません。
+      </div>
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -116,8 +108,10 @@ onMounted(fetchInquiries);
               />
             </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">氏名</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">カテゴリ</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ステータス</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">会社名</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              ステータス
+            </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">受付日</th>
             <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
           </tr>
@@ -133,13 +127,24 @@ onMounted(fetchInquiries);
               />
             </td>
             <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ inquiry.name }}</td>
-            <td class="px-4 py-3 text-sm text-gray-600">{{ inquiry.category }}</td>
+            <td class="px-4 py-3 text-sm text-gray-600">{{ inquiry.company ?? '-' }}</td>
             <td class="px-4 py-3">
-              <AppBadge v-bind="statusMap[inquiry.status] ?? { label: inquiry.status, color: 'gray' }" />
+              <AppBadge
+                v-bind="
+                  INQUIRY_STATUS_MAP[inquiry.status] ?? { label: inquiry.status, color: 'gray' }
+                "
+              />
             </td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ new Date(inquiry.created_at).toLocaleDateString('ja-JP') }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">
+              {{ new Date(inquiry.created_at).toLocaleDateString('ja-JP') }}
+            </td>
             <td class="px-4 py-3 text-right">
-              <button class="text-sm text-blue-600 hover:text-blue-800" @click="router.push({ name: 'inquiries-show', params: { id: inquiry.id } })">詳細</button>
+              <button
+                class="text-sm text-blue-600 hover:text-blue-800"
+                @click="router.push({ name: 'inquiries-show', params: { id: inquiry.id } })"
+              >
+                詳細
+              </button>
             </td>
           </tr>
         </tbody>

@@ -99,7 +99,7 @@ class MemberTest extends TestCase
         $member = Member::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->putJson("/api/admin/members/{$member->slug}", [
+            ->putJson("/api/admin/members/{$member->id}", [
                 'name' => '更新社員',
                 'slug' => $member->slug,
                 'department' => 'デザイン',
@@ -121,7 +121,7 @@ class MemberTest extends TestCase
         $member = Member::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->deleteJson("/api/admin/members/{$member->slug}");
+            ->deleteJson("/api/admin/members/{$member->id}");
 
         $response->assertNoContent();
         $this->assertDatabaseMissing('members', ['id' => $member->id]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ApplicationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplicationRequest;
 use App\Mail\AdminNotification;
@@ -11,6 +12,7 @@ use App\Models\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'Applications', description: '応募')]
@@ -36,7 +38,7 @@ class ApplicationController extends Controller
 
         if ($request->hasFile('resume')) {
             $data['resume_path'] = $request->file('resume')
-                ->store('resumes', 'public');
+                ->store('resumes');
         }
 
         $application = Application::create($data);
@@ -74,7 +76,7 @@ class ApplicationController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
+            $keyword = str_replace(['%', '_'], ['\\%', '\\_'], $request->keyword);
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
                   ->orWhere('email', 'like', "%{$keyword}%");
@@ -118,7 +120,7 @@ class ApplicationController extends Controller
             content: new OA\JsonContent(
                 required: ['status'],
                 properties: [
-                    new OA\Property(property: 'status', type: 'string', enum: ['new', 'reviewing', 'interviewed', 'accepted', 'rejected']),
+                    new OA\Property(property: 'status', type: 'string', enum: ['unread', 'reviewing', 'interviewing', 'accepted', 'rejected']),
                     new OA\Property(property: 'admin_note', type: 'string', nullable: true),
                 ],
             ),
@@ -128,7 +130,7 @@ class ApplicationController extends Controller
     public function updateStatus(Request $request, Application $application): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:new,reviewing,interviewed,accepted,rejected'],
+            'status' => ['required', ApplicationStatus::rule()],
             'admin_note' => ['nullable', 'string'],
         ]);
 
@@ -182,5 +184,31 @@ class ApplicationController extends Controller
 
             fclose($handle);
         }, 200, $headers);
+    }
+
+    /**
+     * 管理側: 履歴書ダウンロード
+     */
+    #[OA\Get(
+        path: '/admin/applications/{application}/resume',
+        summary: '履歴書ダウンロード（管理）',
+        security: [['sanctum' => []]],
+        tags: ['Admin/Applications'],
+        parameters: [new OA\Parameter(name: 'application', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [
+            new OA\Response(response: 200, description: 'ファイルダウンロード'),
+            new OA\Response(response: 404, description: '履歴書なし'),
+        ],
+    )]
+    public function downloadResume(Application $application): \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse
+    {
+        if (!$application->resume_path || !Storage::disk('local')->exists($application->resume_path)) {
+            return response()->json(['message' => '履歴書が見つかりません'], 404);
+        }
+
+        return Storage::disk('local')->download(
+            $application->resume_path,
+            $application->name . '_履歴書.' . pathinfo($application->resume_path, PATHINFO_EXTENSION),
+        );
     }
 }

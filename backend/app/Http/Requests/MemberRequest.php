@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ContentStatus;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MemberRequest extends FormRequest
@@ -26,7 +27,7 @@ class MemberRequest extends FormRequest
             'catch_copy' => ['required', 'string', 'max:200'],
             'message' => ['required', 'string'],
             'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'status' => ['required', 'in:draft,published'],
+            'status' => ['required', ContentStatus::rule()],
             'sort_order' => ['integer', 'min:0'],
         ];
     }

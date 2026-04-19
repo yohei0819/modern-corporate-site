@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import api from '@/services/api';
 import AppBadge from '@/components/ui/AppBadge.vue';
 import { useToast } from '@/stores/toast';
+import { APPLICATION_STATUS_MAP } from '@/constants/status';
 import type { Application } from '@/types';
 
 const router = useRouter();
@@ -13,21 +14,13 @@ const application = ref<Application | null>(null);
 const loading = ref(true);
 const updating = ref(false);
 
-const statuses = [
-  { value: 'new', label: '新規' },
-  { value: 'reviewing', label: '選考中' },
-  { value: 'interviewed', label: '面接済' },
-  { value: 'accepted', label: '採用' },
-  { value: 'rejected', label: '不採用' },
-];
-
-const statusColorMap: Record<string, 'blue' | 'amber' | 'purple' | 'green' | 'red'> = {
-  new: 'blue',
-  reviewing: 'amber',
-  interviewed: 'purple',
-  accepted: 'green',
-  rejected: 'red',
-};
+const statuses = Object.entries(APPLICATION_STATUS_MAP).map(([value, { label }]) => ({
+  value,
+  label,
+}));
+const statusColorMap = Object.fromEntries(
+  Object.entries(APPLICATION_STATUS_MAP).map(([k, v]) => [k, v.color]),
+) as Record<string, 'blue' | 'amber' | 'purple' | 'green' | 'red'>;
 
 onMounted(async () => {
   try {
@@ -54,13 +47,43 @@ async function updateStatus(status: string) {
     updating.value = false;
   }
 }
+
+async function downloadResume() {
+  if (!application.value) return;
+  try {
+    const response = await api.get(`/admin/applications/${application.value.id}/resume`, {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    const disposition = response.headers['content-disposition'];
+    const filename = disposition
+      ? decodeURIComponent(
+          disposition.split("filename*=UTF-8''")[1] ||
+            disposition.split('filename=')[1]?.replace(/"/g, '') ||
+            '履歴書',
+        )
+      : '履歴書';
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch {
+    toast.error('履歴書のダウンロードに失敗しました');
+  }
+}
 </script>
 
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold text-gray-900">応募詳細</h1>
-      <button class="text-sm text-gray-500 hover:text-gray-700" @click="router.push({ name: 'applications' })">
+      <button
+        class="text-sm text-gray-500 hover:text-gray-700"
+        @click="router.push({ name: 'applications' })"
+      >
         ← 一覧に戻る
       </button>
     </div>
@@ -91,13 +114,28 @@ async function updateStatus(status: string) {
             <p class="text-gray-900 whitespace-pre-wrap">{{ application.message ?? 'なし' }}</p>
           </div>
           <div>
+            <p class="text-xs text-gray-500 mb-1">履歴書</p>
+            <button
+              v-if="application.resume_path"
+              class="text-sm text-blue-600 hover:text-blue-800 underline"
+              @click="downloadResume"
+            >
+              ダウンロード
+            </button>
+            <p v-else class="text-gray-400">なし</p>
+          </div>
+          <div>
             <p class="text-xs text-gray-500 mb-1">応募日</p>
-            <p class="text-gray-900">{{ new Date(application.created_at).toLocaleString('ja-JP') }}</p>
+            <p class="text-gray-900">
+              {{ new Date(application.created_at).toLocaleString('ja-JP') }}
+            </p>
           </div>
           <div>
             <p class="text-xs text-gray-500 mb-1">現在のステータス</p>
             <AppBadge
-              :label="statuses.find(s => s.value === application!.status)?.label ?? application!.status"
+              :label="
+                statuses.find((s) => s.value === application!.status)?.label ?? application!.status
+              "
               :color="statusColorMap[application!.status] ?? 'gray'"
             />
           </div>

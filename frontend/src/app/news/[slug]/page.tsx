@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getNewsDetail } from '@/lib/api';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { articleJsonLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/constants';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
 import { notFound } from 'next/navigation';
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         title,
         description,
-        url: `https://frontend-yohei0819.vercel.app/news/${slug}`,
-        ...(res.data.thumbnail ? { images: [{ url: res.data.thumbnail }] } : {}),
+        url: `${SITE_URL}/news/${slug}`,
+        ...(res.data.thumbnail_url ? { images: [{ url: res.data.thumbnail_url }] } : {}),
       },
       twitter: { title, description },
     };
@@ -50,12 +51,7 @@ export default async function NewsDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(article)) }}
       />
-      <Breadcrumb
-        items={[
-          { label: 'お知らせ', href: '/news' },
-          { label: article.title },
-        ]}
-      />
+      <Breadcrumb items={[{ label: 'お知らせ', href: '/news' }, { label: article.title }]} />
 
       <article className="mt-4">
         <div className="flex items-center gap-3">
@@ -67,10 +63,10 @@ export default async function NewsDetailPage({ params }: Props) {
 
         <h1 className="mt-4 text-3xl font-bold text-gray-900 leading-tight">{article.title}</h1>
 
-        {article.thumbnail && (
+        {article.thumbnail_url && (
           <div className="mt-6 rounded-xl overflow-hidden">
             <Image
-              src={article.thumbnail}
+              src={article.thumbnail_url}
               alt={article.title}
               width={800}
               height={450}

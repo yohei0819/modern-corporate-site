@@ -3,6 +3,7 @@ import { getJob } from '@/lib/api';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { employmentTypeLabels } from '@/lib/constants';
 import { jobPostingJsonLd } from '@/lib/json-ld';
+import { SITE_URL } from '@/lib/constants';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title,
       description,
-      openGraph: { title, description, url: `https://frontend-yohei0819.vercel.app/jobs/${slug}` },
+      openGraph: { title, description, url: `${SITE_URL}/jobs/${slug}` },
       twitter: { title, description },
     };
   } catch {
@@ -44,12 +45,7 @@ export default async function JobDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd(job)) }}
       />
-      <Breadcrumb
-        items={[
-          { label: '募集職種', href: '/jobs' },
-          { label: job.title },
-        ]}
-      />
+      <Breadcrumb items={[{ label: '募集職種', href: '/jobs' }, { label: job.title }]} />
 
       <div className="mt-4">
         <span className="inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-primary">
@@ -64,8 +60,12 @@ export default async function JobDetailPage({ params }: Props) {
         <table className="w-full text-sm">
           <tbody>
             <tr className="border-b border-gray-100">
-              <th className="bg-gray-50 px-6 py-4 text-left font-medium text-gray-700 w-40">雇用形態</th>
-              <td className="px-6 py-4">{employmentTypeLabels[job.employment_type] || job.employment_type}</td>
+              <th className="bg-gray-50 px-6 py-4 text-left font-medium text-gray-700 w-40">
+                雇用形態
+              </th>
+              <td className="px-6 py-4">
+                {employmentTypeLabels[job.employment_type] || job.employment_type}
+              </td>
             </tr>
             <tr className="border-b border-gray-100">
               <th className="bg-gray-50 px-6 py-4 text-left font-medium text-gray-700">勤務地</th>

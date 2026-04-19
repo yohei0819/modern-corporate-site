@@ -1,14 +1,13 @@
 import type { JobPosting, News } from '@/types';
-
-const BASE_URL = 'https://frontend-yohei0819.vercel.app';
+import { SITE_URL } from '@/lib/constants';
 
 export function organizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'CORP.',
-    url: BASE_URL,
-    logo: `${BASE_URL}/favicon.ico`,
+    url: SITE_URL,
+    logo: `${SITE_URL}/favicon.ico`,
     description: 'テクノロジーで未来を創る。CORP.の採用情報サイトです。',
     sameAs: [],
   };
@@ -19,7 +18,7 @@ export function webSiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'CORP. 採用サイト',
-    url: BASE_URL,
+    url: SITE_URL,
     description: '募集職種、社員紹介、働く環境など採用に関する情報をお届けします。',
   };
 }
@@ -27,9 +26,9 @@ export function webSiteJsonLd() {
 export function jobPostingJsonLd(job: JobPosting) {
   const employmentTypeMap: Record<string, string> = {
     'full-time': 'FULL_TIME',
-    'contract': 'CONTRACTOR',
+    contract: 'CONTRACTOR',
     'part-time': 'PART_TIME',
-    'intern': 'INTERN',
+    intern: 'INTERN',
   };
 
   return {
@@ -50,9 +49,17 @@ export function jobPostingJsonLd(job: JobPosting) {
     hiringOrganization: {
       '@type': 'Organization',
       name: 'CORP.',
-      sameAs: BASE_URL,
+      sameAs: SITE_URL,
     },
-    ...(job.salary_text ? { baseSalary: { '@type': 'MonetaryAmount', currency: 'JPY', value: { '@type': 'QuantitativeValue', value: job.salary_text } } } : {}),
+    ...(job.salary_text
+      ? {
+          baseSalary: {
+            '@type': 'MonetaryAmount',
+            currency: 'JPY',
+            value: { '@type': 'QuantitativeValue', value: job.salary_text },
+          },
+        }
+      : {}),
   };
 }
 
@@ -73,13 +80,13 @@ export function articleJsonLd(article: News) {
       name: 'CORP.',
       logo: {
         '@type': 'ImageObject',
-        url: `${BASE_URL}/favicon.ico`,
+        url: `${SITE_URL}/favicon.ico`,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${BASE_URL}/news/${article.slug}`,
+      '@id': `${SITE_URL}/news/${article.slug}`,
     },
-    ...(article.thumbnail ? { image: article.thumbnail } : {}),
+    ...(article.thumbnail_url ? { image: article.thumbnail_url } : {}),
   };
 }

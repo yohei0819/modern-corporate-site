@@ -3,6 +3,7 @@ import { getNewsList } from '@/lib/api';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/common/Badge';
 import Pagination from '@/components/common/Pagination';
+import { newsCategoryLabels } from '@/lib/constants';
 import { defineMetadata } from '@/lib/metadata';
 
 export const revalidate = 60;
@@ -15,10 +16,7 @@ export const metadata = defineMetadata(
 
 const categories = [
   { value: '', label: 'すべて' },
-  { value: 'info', label: 'お知らせ' },
-  { value: 'press', label: 'プレスリリース' },
-  { value: 'event', label: 'イベント' },
-  { value: 'blog', label: 'ブログ' },
+  ...Object.entries(newsCategoryLabels).map(([value, label]) => ({ value, label })),
 ];
 
 export default async function NewsPage({

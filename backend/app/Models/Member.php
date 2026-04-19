@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -33,11 +34,11 @@ class Member extends Model
 
     public function getProfileImageUrlAttribute(): ?string
     {
-        return $this->profile_image ? url('storage/' . $this->profile_image) : null;
+        return $this->profile_image ? Storage::disk('public')->url($this->profile_image) : null;
     }
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', ContentStatus::Published);
     }
 }

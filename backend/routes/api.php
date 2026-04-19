@@ -83,6 +83,7 @@ Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
     Route::get('/admin/applications/export', [ApplicationController::class, 'export']);
     Route::get('/admin/applications', [ApplicationController::class, 'adminIndex']);
     Route::get('/admin/applications/{application}', [ApplicationController::class, 'adminShow']);
+    Route::get('/admin/applications/{application}/resume', [ApplicationController::class, 'downloadResume']);
     Route::put('/admin/applications/{application}/status', [ApplicationController::class, 'updateStatus']);
 
     // 問い合わせ管理

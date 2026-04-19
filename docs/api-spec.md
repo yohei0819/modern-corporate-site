@@ -8,11 +8,11 @@ Base URL: `/api`
 
 ## 認証
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| POST | `/login` | 不要 | ログイン |
-| POST | `/logout` | 必要 | ログアウト |
-| GET | `/me` | 必要 | ログインユーザー情報取得 |
+| Method | Endpoint  | 認証 | 説明                     |
+| ------ | --------- | ---- | ------------------------ |
+| POST   | `/login`  | 不要 | ログイン                 |
+| POST   | `/logout` | 必要 | ログアウト               |
+| GET    | `/me`     | 必要 | ログインユーザー情報取得 |
 
 ### POST /login
 
@@ -38,13 +38,13 @@ Base URL: `/api`
 
 ## 求人（Jobs）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| GET | `/jobs` | 不要 | 求人一覧（公開側 / ステータス=published のみ） |
-| GET | `/jobs/{slug}` | 不要 | 求人詳細（公開側 / slug で取得） |
-| POST | `/jobs` | 必要 | 求人作成 |
-| PUT | `/jobs/{id}` | 必要 | 求人更新 |
-| DELETE | `/jobs/{id}` | 必要 | 求人削除 |
+| Method | Endpoint       | 認証 | 説明                                           |
+| ------ | -------------- | ---- | ---------------------------------------------- |
+| GET    | `/jobs`        | 不要 | 求人一覧（公開側 / ステータス=published のみ） |
+| GET    | `/jobs/{slug}` | 不要 | 求人詳細（公開側 / slug で取得）               |
+| POST   | `/jobs`        | 必要 | 求人作成                                       |
+| PUT    | `/jobs/{id}`   | 必要 | 求人更新                                       |
+| DELETE | `/jobs/{id}`   | 必要 | 求人削除                                       |
 
 ### GET /jobs
 
@@ -105,13 +105,13 @@ Query: ?employment_type=full-time&category=engineer&location=tokyo&page=1
 
 ## 社員（Members）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| GET | `/members` | 不要 | 社員一覧（公開側 / ステータス=published のみ） |
-| GET | `/members/{slug}` | 不要 | 社員詳細（公開側） |
-| POST | `/members` | 必要 | 社員作成（multipart/form-data） |
-| PUT | `/members/{id}` | 必要 | 社員更新 |
-| DELETE | `/members/{id}` | 必要 | 社員削除 |
+| Method | Endpoint          | 認証 | 説明                                           |
+| ------ | ----------------- | ---- | ---------------------------------------------- |
+| GET    | `/members`        | 不要 | 社員一覧（公開側 / ステータス=published のみ） |
+| GET    | `/members/{slug}` | 不要 | 社員詳細（公開側）                             |
+| POST   | `/members`        | 必要 | 社員作成（multipart/form-data）                |
+| PUT    | `/members/{id}`   | 必要 | 社員更新                                       |
+| DELETE | `/members/{id}`   | 必要 | 社員削除                                       |
 
 ### POST /members
 
@@ -134,13 +134,13 @@ Fields:
 
 ## お知らせ（News）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| GET | `/news` | 不要 | お知らせ一覧（公開側 / published + published_at <= now） |
-| GET | `/news/{slug}` | 不要 | お知らせ詳細（公開側） |
-| POST | `/news` | 必要 | お知らせ作成 |
-| PUT | `/news/{id}` | 必要 | お知らせ更新 |
-| DELETE | `/news/{id}` | 必要 | お知らせ削除 |
+| Method | Endpoint       | 認証 | 説明                                                     |
+| ------ | -------------- | ---- | -------------------------------------------------------- |
+| GET    | `/news`        | 不要 | お知らせ一覧（公開側 / published + published_at <= now） |
+| GET    | `/news/{slug}` | 不要 | お知らせ詳細（公開側）                                   |
+| POST   | `/news`        | 必要 | お知らせ作成                                             |
+| PUT    | `/news/{id}`   | 必要 | お知らせ更新                                             |
+| DELETE | `/news/{id}`   | 必要 | お知らせ削除                                             |
 
 ### POST /news
 
@@ -162,13 +162,13 @@ Fields:
 
 ## 応募（Applications）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| POST | `/applications` | 不要 | 応募送信（公開側 / multipart） |
-| GET | `/admin/applications` | 必要 | 応募一覧（管理側） |
-| GET | `/admin/applications/{id}` | 必要 | 応募詳細（管理側） |
-| PUT | `/admin/applications/{id}/status` | 必要 | ステータス変更 |
-| GET | `/admin/applications/export` | 必要 | CSV エクスポート |
+| Method | Endpoint                          | 認証 | 説明                           |
+| ------ | --------------------------------- | ---- | ------------------------------ |
+| POST   | `/applications`                   | 不要 | 応募送信（公開側 / multipart） |
+| GET    | `/admin/applications`             | 必要 | 応募一覧（管理側）             |
+| GET    | `/admin/applications/{id}`        | 必要 | 応募詳細（管理側）             |
+| PUT    | `/admin/applications/{id}/status` | 必要 | ステータス変更                 |
+| GET    | `/admin/applications/export`      | 必要 | CSV エクスポート               |
 
 ### POST /applications
 
@@ -176,7 +176,7 @@ Fields:
 Content-Type: multipart/form-data
 
 Fields:
-  job_id: integer (required, exists:jobs,id)
+  job_posting_id: integer (required, exists:job_postings,id)
   name: string (required, max:100)
   email: email (required)
   phone: string (required)
@@ -202,12 +202,12 @@ Fields:
 
 ## 問い合わせ（Inquiries）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| POST | `/inquiries` | 不要 | 問い合わせ送信（公開側） |
-| GET | `/admin/inquiries` | 必要 | 問い合わせ一覧（管理側） |
-| GET | `/admin/inquiries/{id}` | 必要 | 問い合わせ詳細（管理側） |
-| PUT | `/admin/inquiries/{id}` | 必要 | 対応済み切替 / メモ保存 |
+| Method | Endpoint                | 認証 | 説明                     |
+| ------ | ----------------------- | ---- | ------------------------ |
+| POST   | `/inquiries`            | 不要 | 問い合わせ送信（公開側） |
+| GET    | `/admin/inquiries`      | 必要 | 問い合わせ一覧（管理側） |
+| GET    | `/admin/inquiries/{id}` | 必要 | 問い合わせ詳細（管理側） |
+| PUT    | `/admin/inquiries/{id}` | 必要 | 対応済み切替 / メモ保存  |
 
 ### POST /inquiries
 
@@ -225,11 +225,11 @@ Fields:
 
 ## メディア（Media）
 
-| Method | Endpoint | 認証 | 説明 |
-|--------|----------|------|------|
-| POST | `/admin/media` | 必要 | 画像アップロード（multipart） |
-| GET | `/admin/media` | 必要 | 画像一覧 |
-| DELETE | `/admin/media/{id}` | 必要 | 画像削除 |
+| Method | Endpoint            | 認証 | 説明                          |
+| ------ | ------------------- | ---- | ----------------------------- |
+| POST   | `/admin/media`      | 必要 | 画像アップロード（multipart） |
+| GET    | `/admin/media`      | 必要 | 画像一覧                      |
+| DELETE | `/admin/media/{id}` | 必要 | 画像削除                      |
 
 ### POST /admin/media
 

@@ -135,7 +135,7 @@ class JobPostingTest extends TestCase
         $job = JobPosting::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->putJson("/api/admin/jobs/{$job->slug}", [
+            ->putJson("/api/admin/jobs/{$job->id}", [
                 'title' => '更新後のタイトル',
                 'slug' => $job->slug,
                 'employment_type' => 'contract',
@@ -157,7 +157,7 @@ class JobPostingTest extends TestCase
         $job = JobPosting::factory()->create();
 
         $response = $this->withToken($this->token)
-            ->deleteJson("/api/admin/jobs/{$job->slug}");
+            ->deleteJson("/api/admin/jobs/{$job->id}");
 
         $response->assertNoContent();
         $this->assertDatabaseMissing('job_postings', ['id' => $job->id]);

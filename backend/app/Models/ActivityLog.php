@@ -17,9 +17,12 @@ class ActivityLog extends Model
         'metadata',
     ];
 
-    protected $casts = [
-        'metadata' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 
     public function user(): BelongsTo
     {

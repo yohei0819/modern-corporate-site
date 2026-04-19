@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MemberRequest;
+use App\Http\Traits\FormatsApiResponse;
+use App\Http\Traits\HandlesFileUpload;
 use App\Models\ActivityLog;
 use App\Models\Member;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'Members', description: '社員')]
 #[OA\Tag(name: 'Admin/Members', description: '社員管理')]
 class MemberController extends Controller
 {
+    use FormatsApiResponse, HandlesFileUpload;
     #[OA\Get(
         path: '/members',
         summary: '社員一覧（公開）',
@@ -27,15 +29,7 @@ class MemberController extends Controller
             ->orderBy('sort_order')
             ->paginate(12);
 
-        return response()->json([
-            'data' => $members->items(),
-            'meta' => [
-                'current_page' => $members->currentPage(),
-                'last_page' => $members->lastPage(),
-                'per_page' => $members->perPage(),
-                'total' => $members->total(),
-            ],
-        ]);
+        return $this->paginatedResponse($members);
     }
 
     #[OA\Get(
@@ -106,11 +100,7 @@ class MemberController extends Controller
     public function store(MemberRequest $request): JsonResponse
     {
         $data = $request->validated();
-
-        if ($request->hasFile('profile_image')) {
-            $data['profile_image'] = $request->file('profile_image')
-                ->store('members', 'public');
-        }
+        $this->storeUploadedFile($request, $data, 'profile_image', 'members');
 
         $member = Member::create($data);
 
@@ -131,19 +121,9 @@ class MemberController extends Controller
     public function update(MemberRequest $request, Member $member): JsonResponse
     {
         $data = $request->validated();
-
-        if ($request->hasFile('profile_image')) {
-            $newPath = $request->file('profile_image')
-                ->store('members', 'public');
-            $oldPath = $member->profile_image;
-            $data['profile_image'] = $newPath;
-        }
+        $this->updateUploadedFile($request, $member, $data, 'profile_image', 'members');
 
         $member->update($data);
-
-        if (isset($oldPath) && $oldPath) {
-            Storage::disk('public')->delete($oldPath);
-        }
 
         ActivityLog::log('update', 'Member', $member->id, "社員「{$member->name}」を更新しました");
 
@@ -162,10 +142,7 @@ class MemberController extends Controller
     {
         ActivityLog::log('delete', 'Member', $member->id, "社員「{$member->name}」を削除しました");
 
-        if ($member->profile_image) {
-            Storage::disk('public')->delete($member->profile_image);
-        }
-
+        $this->deleteModelFile($member, 'profile_image');
         $member->delete();
 
         return response()->json(null, 204);

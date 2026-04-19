@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { InquiryFormData } from '@/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { PUBLIC_API_URL } from '@/lib/constants';
 
 export default function ContactForm() {
   const router = useRouter();
@@ -27,10 +27,10 @@ export default function ContactForm() {
     setErrors({});
 
     try {
-      const res = await fetch(`${API_URL}/api/inquiries`, {
+      const res = await fetch(`${PUBLIC_API_URL}/api/inquiries`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(form),
@@ -87,7 +87,9 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="company" className="block text-sm font-medium text-gray-700">会社名</label>
+        <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+          会社名
+        </label>
         <input
           id="company"
           name="company"
